@@ -1,5 +1,5 @@
 '''
-FILE: output.py
+FILE: userfile.py
 PURPOSE: creates clean output for user
 INPUT: most frequent file
 OUTPUT: sequence and meta files

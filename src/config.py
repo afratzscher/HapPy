@@ -7,13 +7,13 @@ CREATED BY: Anne-Sophie Fratzscher
 '''
 __FOLDERPATH__ = ""
 __FOLDERNAME__ = ""
-__GROUPING__ = ['pop'] 
+__GROUPING__ = ['pop', 'super'] 
 __MOSTFREQ__ = 1 # 1 if yes, 0 if no
 __EMAIL__ = ""
 
-__REFVER__ = ""
+__REFVER__ = "38"
 __ANNOTATIONRELEASE__ = ""
-__GENENAME__ = ""
+__GENENAME__ = "ACKR1"
 
 __CHR__ = ""
 __CHRVERSION__  = ""

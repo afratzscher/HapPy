@@ -96,6 +96,7 @@ def getGeneRange():
 						elif (config.__REFVER__ == '38'):
 							config.__ANNOTATIONRELEASE__ = p['AnnotationRelease']
 							setConfigValues(p)
+							break
 							
 	return(errCode)
 

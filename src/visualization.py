@@ -138,8 +138,8 @@ def visualizeMostFrequent(df):
 	getVisualization(df, "most_frequent", config.__CSPOP__, fullFlag)
 	return
 
-def getInput(input):
-	vistype = input
+def getInput(inputI):
+	vistype = inputI
 	
 	if vistype == 'most frequent':
 		full = 'n'

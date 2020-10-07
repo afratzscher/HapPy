@@ -6,7 +6,6 @@ OUTPUT: opened vcf file
 CREATED BY: GitHub user dceoy
 NOTES: repository can be found here: https://gist.github.com/dceoy/99d976a2c01e7f0ba1c813778f9db744
 '''
-
 #!/usr/bin/env python
 
 import io

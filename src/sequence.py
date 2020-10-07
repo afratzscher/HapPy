@@ -32,6 +32,7 @@ def getFASTA():
 
 def replace(df, seq):
 	pos = []
+	location = []
 	other = ['POS', 'ID', 'REF', 'ALT']
 	for (index, row) in df.iterrows():
 		if index < len(df.index)-1:
@@ -42,21 +43,26 @@ def replace(df, seq):
 	for i in range(0, len(pos)):
 		if i == 0:
 			seqtoadd = seq[0:pos[i]]
+			loc = config.__START__
 		elif i == (len(pos)-1):
 			seqtoadd = seq[(pos[i-1]+1):(pos[i]+1)]
+			loc = config.__START__ + pos[i-1]+1
 		else:
 			seqtoadd = seq[(pos[i-1]+1):pos[i]]
+			loc = config.__START__ + pos[i-1]+1
 		if seqtoadd == "":
 			sequence.append(None)
+			location.append(None)
 		else:
 			sequence.append(seqtoadd)
+			location.append(loc)
 	
 	rowseq = []
 	for i in range(0, len(sequence)):
 		rowseq.append([sequence[i]] * (len(df.columns)-2))
 	
 	new = pd.DataFrame(rowseq)
-	new.insert(0, 'POS', None)
+	new.insert(0, 'POS', location)
 	new.insert(1, 'ID', None)
 	
 	new.columns = df.columns

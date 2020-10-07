@@ -11,9 +11,8 @@ import os
 import time
 
 def main():
-	# INSERT EMAIL AND REFERENCE GENOME VERSION HERE
-	config.__EMAIL__ = 'test@example.com'
-	config.__REFVER__ = '38' # INPUT '37' OR '38'
+	# INSERT EMAIL HERE
+	config.__EMAIL__ = 'anne-sophie.fratzscher@mail.mcgill.ca'
 	
 	start_time = time.time()
 	selection.main()

@@ -29,7 +29,7 @@ def getHaplotypes(filename):
 	# call sequence file to get FASTA sequence and add
 	df = sequence.main(df) 
 	df = df.dropna(axis=0, how="all").reset_index(drop=True) # delete rows with all nan
-	
+
 	# get unambiguous haplotypes
 	df = getUnambiguous(df)
 
@@ -45,18 +45,18 @@ def getHaplotypes(filename):
 				startidx = df.index[df['POS'] == startval-1].tolist()
 				if startidx:
 					idx = startidx[0]
-					df.loc[0:idx+1, i] = 'N'
+					df.loc[0:idx, i] = 'N'
 			if endval < config.__END__:
 				endidx = df.index[df['POS'] == endval+1].tolist()
 				if endidx:
 					idx = endidx[0]
 					df.loc[idx:len(df.index) - 4, i] = 'N'
-	
+					
 	# replace values with nucleotides (only if SNP -> if ref, keep as '-')
 	# also count indel 
 	for (index,row) in df.iterrows():
 		if not (index > len(df.index) - 5): # ignore last 5 rows (start, end, #SNPS...)
-			if not math.isnan(df.loc[index]['POS']):
+			if not df.loc[index]['ID'] is None:
 				ref = ['-']
 				reflen = len(row['REF'])
 				alt = row['ALT'].split(',')

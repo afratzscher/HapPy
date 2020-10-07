@@ -1,5 +1,5 @@
 '''
-FILE: counts.py
+FILE: popcounts.py
 PURPOSE: obtain populations from distinct haplotypes
 INPUT: none
 OUTPUT: 2 csv files with population counts called 	
