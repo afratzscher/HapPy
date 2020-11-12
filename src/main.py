@@ -12,7 +12,7 @@ import time
 
 def main():
 	# INSERT EMAIL HERE
-	config.__EMAIL__ = 'anne-sophie.fratzscher@mail.mcgill.ca'
+	config.__EMAIL__ = "example@example.com"
 	
 	start_time = time.time()
 	selection.main()
