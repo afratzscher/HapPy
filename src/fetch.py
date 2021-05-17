@@ -89,14 +89,17 @@ def getGeneRange():
 			if ds['Name'] == config.__GENENAME__:
 				for p in ds['LocationHist']['LocationHistType']:
 					if p['ChrAccVer'][:7] == 'NC_0000':
-						if (config.__REFVER__ == '37'): #want first 105 (since is sorted)
-							config.__ANNOTATIONRELEASE__ = '105'
-							if (p['AnnotationRelease'] == '105'):
-								setConfigValues(p)
-						elif (config.__REFVER__ == '38'):
-							config.__ANNOTATIONRELEASE__ = p['AnnotationRelease']
-							setConfigValues(p)
-							break
+						# if (config.__REFVER__ == '37'): #want first 105 (since is sorted)
+						# 	config.__ANNOTATIONRELEASE__ = '105'
+						# 	if (p['AnnotationRelease'] == '105'):
+						# 		setConfigValues(p)
+						# elif (config.__REFVER__ == '38'):
+							# config.__ANNOTATIONRELEASE__ = p['AnnotationRelease']
+							# setConfigValues(p)
+							# break
+						config.__ANNOTATIONRELEASE__ = p['AnnotationRelease']
+						setConfigValues(p)
+						break
 							
 	return(errCode)
 
@@ -109,18 +112,23 @@ OUTPUT: length of chromosome
 def getLength():
 	chromV = config.__CHRVERSION__
 	chromosome = config.__CHR__
-	
-	if config.__REFVER__ == '38': # search nucleotide database
-		dsdocs = eSearch(chromV, 'nucleotide')
-		for ds in dsdocs['eSummaryResult']['DocSum']['Item']:
-			if (ds['@Name'] == 'Length'):
-				length = ds['#text']
-		return(int(length))
-	elif config.__REFVER__ == '37': # read from file
-		versionFile = 'GRCh37_version_length.txt'
-		data = pd.read_csv(versionFile, sep="\t")
-		length = data.iloc[int(chromosome)-1]['length']
-		return(int(length))
+	dsdocs = eSearch(chromV, 'nucleotide')
+	for ds in dsdocs['eSummaryResult']['DocSum']['Item']:
+		if (ds['@Name'] == 'Length'):
+			length = ds['#text']
+	return(int(length))
+
+	# if config.__REFVER__ == '38': # search nucleotide database
+	# 	dsdocs = eSearch(chromV, 'nucleotide')
+	# 	for ds in dsdocs['eSummaryResult']['DocSum']['Item']:
+	# 		if (ds['@Name'] == 'Length'):
+	# 			length = ds['#text']
+	# 	return(int(length))
+	# elif config.__REFVER__ == '37': # read from file
+	# 	versionFile = 'GRCh37_version_length.txt'
+	# 	data = pd.read_csv(versionFile, sep="\t")
+	# 	length = data.iloc[int(chromosome)-1]['length']
+	# 	return(int(length))
 
 '''
 FUNCTION: getClosest(upDown, length)

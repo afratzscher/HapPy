@@ -11,7 +11,7 @@ __GROUPING__ = ['pop', 'super']
 __MOSTFREQ__ = 1 # 1 if yes, 0 if no
 __EMAIL__ = ""
 
-__REFVER__ = "38"
+# __REFVER__ = "38" # depreceated -> can only use version 38 now
 __ANNOTATIONRELEASE__ = ""
 __GENENAME__ = "ACKR1"
 

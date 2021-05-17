@@ -14,7 +14,7 @@ import subprocess
 import read_vcf
 import fetch
 
-def autosomes(filepath):
+def checkAutosomes(filepath):
 	config.__FILENAME__ = "1000G_chr" + (str(int(config.__CHR__)) + "_" +
 						str(config.__START__) + "-" + 
 						str(config.__END__) + ".vcf")
@@ -54,7 +54,7 @@ def combine():
 	df.to_csv((config.__FILEPATH__ + config.__FILENAME__), sep="\t", mode='a', index=False)
 
 # for P3 grch38 b154
-def makeCommandsP3_38_154(name, ftp, cmds, xy):
+def makeCommands(name, ftp, cmds, xy):
 	if cmds == "":
 		cmds = []
 	#define ftp
@@ -67,7 +67,7 @@ def makeCommandsP3_38_154(name, ftp, cmds, xy):
 
 	#command to get data file
 	baseName =  config.__FILENAME__[len('1000G_'):] 
-	cmds.append('bcftools view "$ftp" -I -r ' + str(config.__CHR__) + ":" 
+	cmds.append('bcftools view "$ftp" -I -r chr' + str(config.__CHR__) + ":" 
 			+ str(config.__START__) + "-" + str(config.__END__) 
 			+ " > " + config.__FILEPATH__ + "raw_" + baseName)
 	cmds.append('bcftools query "$dbSNPFTP" -f "%POS\t%ID\t%REF\t%ALT\n" -r ' + config.__CHRVERSION__
@@ -77,7 +77,8 @@ def makeCommandsP3_38_154(name, ftp, cmds, xy):
 	cmds.append('rm ' + name + '.tbi')
 	cmds.append('rm ' + refVersion + '.tbi')
 	return cmds
-def getDataP3_38_154(filepath):
+
+def fetchSeq(filepath):
 	createFolder(filepath) # create folder if doesnt exist
 
 	#if DONT have data, fetch
@@ -85,9 +86,12 @@ def getDataP3_38_154(filepath):
 		# if dont have raw data, fetch
 		rawName = "raw_" + config.__FILENAME__[len('1000G_'):] 
 		if not Path(config.__FILEPATH__ + rawName).is_file():
-			ftp = "ftp=ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/supporting/GRCh38_positions/"
-			vcfgzName = "ALL.chr" + str(config.__CHR__) + "_GRCh38.genotypes.20170504.vcf.gz"
-			cmd = makeCommandsP3_38_154(vcfgzName, ftp, "", "")
+			# ftp = "ftp=ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/supporting/GRCh38_positions/"
+			# vcfgzName = "ALL.chr" + str(config.__CHR__) + "_GRCh38.genotypes.20170504.vcf.gz"
+			ftp = "ftp=ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/working/20201028_3202_phased/"
+			# vcfgzName = "CCDG_14151_B01_GRM_WGS_2020-08-05_chr" + str(config.__CHR__) + ".filtered.shapeit2-duohmm-phased.vcf.gz"
+			vcfgzName = "CCDG_14151_B01_GRM_WGS_2020-08-05_chr1.filtered.shapeit2-duohmm-phased.vcf.gz"
+			cmd = makeCommands(vcfgzName, ftp, "", "")
 			run_commands(*cmd)
 		
 		#then combine raw and dbSNP
@@ -95,14 +99,21 @@ def getDataP3_38_154(filepath):
 
 # MAIN DECISION: picks which getData and makeCommands to use 
 def getData(filepath):
-	autosomes(filepath)
-	if config.__REFVER__ == '38':
-		getDataP3_38_154(filepath)
+	checkAutosomes(filepath)
+	fetchSeq(filepath)
+
 def selectGene(filepath):
 	errCode = fetch.main()
 	if errCode == -1: # gene not found
 		return(-1)
-	config.__GENENAME__ = config.__REFVER__ + "_" + config.__GENENAME__
+
+	# print('data notes')
+	# print(config.__CHR__)
+	# print(config.__START__)
+	# print(config.__END__)
+	# print(config.__GENESTART__)
+	# print(config.__GENEEND__)
+
 	# fetch data from 1000GP
 	getData(filepath)
 
