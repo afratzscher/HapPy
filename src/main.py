@@ -12,7 +12,8 @@ import time
 
 def main():
 	# INSERT EMAIL HERE
-	config.__EMAIL__ = "example@example.com"
+	# config.__EMAIL__ = "example@example.com"
+	config.__EMAIL__ = "afratzscher@yahoo.com"
 	
 	start_time = time.time()
 	selection.main()
