@@ -21,8 +21,8 @@ def checkAutosomes(filepath):
 	return
 
 def createFolder(filepath):
-	config.__FILEPATH__ = filepath + "/results/" + config.__GENENAME__ + "/"
-	geneFolder = filepath + "/results/" + config.__GENENAME__ 
+	config.__FILEPATH__ = filepath + "/results/" + config.__FOLDERNAME__ + "/"
+	geneFolder = filepath + "/results/" + config.__FOLDERNAME__ 
 	#if no folder, create folder
 	if not (os.path.isdir(geneFolder)):
 		try:
@@ -89,8 +89,7 @@ def fetchSeq(filepath):
 			# ftp = "ftp=ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/supporting/GRCh38_positions/"
 			# vcfgzName = "ALL.chr" + str(config.__CHR__) + "_GRCh38.genotypes.20170504.vcf.gz"
 			ftp = "ftp=ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/working/20201028_3202_phased/"
-			# vcfgzName = "CCDG_14151_B01_GRM_WGS_2020-08-05_chr" + str(config.__CHR__) + ".filtered.shapeit2-duohmm-phased.vcf.gz"
-			vcfgzName = "CCDG_14151_B01_GRM_WGS_2020-08-05_chr1.filtered.shapeit2-duohmm-phased.vcf.gz"
+			vcfgzName = "CCDG_14151_B01_GRM_WGS_2020-08-05_chr" + str(config.__CHR__) + ".filtered.shapeit2-duohmm-phased.vcf.gz"
 			cmd = makeCommands(vcfgzName, ftp, "", "")
 			run_commands(*cmd)
 		
@@ -103,17 +102,6 @@ def getData(filepath):
 	fetchSeq(filepath)
 
 def selectGene(filepath):
-	errCode = fetch.main()
-	if errCode == -1: # gene not found
-		return(-1)
-
-	# print('data notes')
-	# print(config.__CHR__)
-	# print(config.__START__)
-	# print(config.__END__)
-	# print(config.__GENESTART__)
-	# print(config.__GENEEND__)
-
 	# fetch data from 1000GP
 	getData(filepath)
 

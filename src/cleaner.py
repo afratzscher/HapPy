@@ -89,6 +89,58 @@ def clean(individuals):
 	df = manualclean(df)
 	df.to_csv(cleanedName, sep="\t", mode='a', index=False)
 	
+'''CLEAN WITHOUT FILTERING INDIVIDUALS'''
+def clean():
+	df = read_vcf.read_vcf(filename)
+	
+	copy = rangeSelection(df)
+	
+	columns = copy.columns
+	infoNames = {'CHROM','POS','ID','REF','ALT',
+		'QUAL','FILTER','INFO','FORMAT'}
+	
+	# get all sample names
+	initsamples = []
+	for i in copy.columns:
+		if not (i in infoNames):
+			initsamples.append(i)
+
+	cleanedsamples = []
+	dups = []
+
+	# get samples that are in indFile AND with at most 1 hetero SNP within range
+	for i in initsamples:
+		if i not in dups:
+			# gets counts for different values (0|0, 0|1, 1|0, ...)
+			count = copy[i].value_counts()
+			totalcount = df[i].value_counts()
+
+			# if homozygous (ie. 0|0, 1|1, 2|2, ... 6|6), dont count
+			totalSNPS = 0
+			rangeSNPS = 0
+
+			# get range SNPS first
+			for c in range(0, len(count)):
+				if (count.index[c][0] != count.index[c][-1]):
+						rangeSNPS += count[c]
+
+			if rangeSNPS <= 1:
+				cleanedsamples.append(i)
+				# get total SNPS if part of clean sample
+				for c in range(0, len(totalcount)):
+					if (totalcount.index[c][0] != totalcount.index[c][-1]):
+							totalSNPS += totalcount[c]
+				df.at[-1,i] = totalSNPS
+			dups.append(i)
+
+	# remove samples from file that are not part of cleanedsamples list
+	for i in initsamples:
+		if not(i in cleanedsamples):
+			del df[i]
+
+	df = manualclean(df)
+	df.to_csv(cleanedName, sep="\t", mode='a', index=False)
+
 '''
 FUNCTION: rangeSelection(df)
 PURPOSE: removes SNPs that are outside of range
@@ -112,5 +164,6 @@ def main():
 	if fileCheck.is_file():
 		return
 
-	individuals = getIndividuals()
-	clean(individuals)
+	# individuals = getIndividuals()
+	# clean(individuals)
+	clean()

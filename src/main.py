@@ -5,6 +5,7 @@ INPUT: none
 OUTPUT: none
 '''
 import config
+import settings
 import selection
 import run
 import os
@@ -16,6 +17,17 @@ def main():
 	config.__EMAIL__ = "afratzscher@yahoo.com"
 	
 	start_time = time.time()
+	settings.main()
+
+	print('data notes')
+	print(config.__CHR__)
+	print(config.__START__)
+	print(config.__END__)
+	print(config.__GENESTART__)
+	print(config.__GENEEND__)
+	print(config.__GENENAME__)
+
+
 	selection.main()
 	run.main()
 
