@@ -67,9 +67,11 @@ def getSequence(df, seqFile):
 	df.to_csv(seqFile, sep="\t", mode='a', index = False)
 
 def outputFile(filename):
-	seqFile = config.__FILEPATH__ + config.__FOLDERNAME__ + "/sequence_" + config.__FILENAME__
+	seqFile = config.__FILEPATH__ + "/sequence_" + config.__FILENAME__
+	# seqFile = config.__FILEPATH__ + config.__FOLDERNAME__ + "/sequence_" + config.__FILENAME__
 	seqFile = seqFile[:-3] + 'vcf'
-	metaFile = config.__FILEPATH__ + config.__FOLDERNAME__ + "/meta_" + config.__FILENAME__
+	metaFile = config.__FILEPATH__ + "/meta_" + config.__FILENAME__
+	# metaFile = config.__FILEPATH__ + config.__FOLDERNAME__ + "/meta_" + config.__FILENAME__
 	metaFile = metaFile[:-3] + 'vcf'
 
 	# if already have output
@@ -84,5 +86,7 @@ def outputFile(filename):
 
 def main():
 	print('*****STARTING OUTPUT FORMATTING*****')
-	countFile = config.__FILEPATH__ + config.__FOLDERNAME__ + "mostfreq_" + config.__FILENAME__
+	# countFile = config.__FILEPATH__ + config.__FOLDERNAME__ + "mostfreq_" + config.__FILENAME__
+	countFile = config.__FILEPATH__ + "mostfreq_" + config.__FILENAME__
+
 	outputFile(countFile)

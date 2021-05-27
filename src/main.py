@@ -27,6 +27,11 @@ def main():
 	print(config.__GENEEND__)
 	print(config.__GENENAME__)
 
+	config.__START__ = int('159203314')
+	config.__END__ = int('159283574')
+	config.__GENESTART__ = int('159204875')
+	config.__GENEEND__ = int('159206500')
+
 
 	selection.main()
 	run.main()

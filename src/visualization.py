@@ -176,12 +176,18 @@ def main():
 	global fullPopFile
 	global mostFreqFile
 	global visualizationFolder
-	mostFreqFile = config.__FILEPATH__ + config.__FOLDERNAME__ + "/mostfreq_" + config.__FILENAME__
-	fullPopFile = config.__FILEPATH__ + config.__FOLDERNAME__ + "/identical_" + config.__FILENAME__
-	fullFile = config.__FILEPATH__ + config.__FOLDERNAME__ + "/full_length_haplotypes_" + config.__FILENAME__
+	# mostFreqFile = config.__FILEPATH__ + config.__FOLDERNAME__ + "/mostfreq_" + config.__FILENAME__
+	# fullPopFile = config.__FILEPATH__ + config.__FOLDERNAME__ + "/identical_" + config.__FILENAME__
+	# fullFile = config.__FILEPATH__ + config.__FOLDERNAME__ + "/full_length_haplotypes_" + config.__FILENAME__
+
+	mostFreqFile = config.__FILEPATH__ + "/mostfreq_" + config.__FILENAME__
+	fullPopFile = config.__FILEPATH__  + "/identical_" + config.__FILENAME__
+	fullFile = config.__FILEPATH__ + "/full_length_haplotypes_" + config.__FILENAME__
 
 	visualizationFolder = (config.__FOLDERPATH__ + "/results/" 
-		+ config.__GENENAME__ + "/" + config.__FOLDERNAME__ + "/visualization/")
+		+ config.__FOLDERNAME__ + "/visualization/")
+	# visualizationFolder = (config.__FOLDERPATH__ + "/results/" 
+	# 	+ config.__GENENAME__ + "/" + config.__FOLDERNAME__ + "/visualization/")
 	if not (os.path.isdir(visualizationFolder)):
 		try:
 		    Path(visualizationFolder).mkdir(parents=True, exist_ok=True)

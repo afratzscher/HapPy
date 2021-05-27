@@ -25,7 +25,7 @@ def computation():
 	haplotypes.main()
 	distinct.main()
 	popcounts.main()
-	visualization.main()
+	# visualization.main()
 	userfile.main()
 
 def main():

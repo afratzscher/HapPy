@@ -43,7 +43,10 @@ def main():
         errCode = fetch.main()
         if errCode == -1: # gene not found
             return(-1)
+
     elif option_dict.get('region'):
+        print("TO FIX -> add gene AND whole region as vars...")
+        print("TO DO: also fix haplotype (before/after DNE b/c same as gene)")
         if not 'chr' in option_dict.get('region'):
             print("Incorrect format. Use '-h' to get help")
             exit(0)

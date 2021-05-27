@@ -22,7 +22,9 @@ INPUT: filename
 OUTPUT: csv called "mostfreq_chr1_159203314-159283887.vcf"
 '''
 def getPopsMostFreq(filename):
-	popFile = config.__FILEPATH__ + config.__FOLDERNAME__ + "/mostfreq_" + config.__FILENAME__ 
+	# popFile = config.__FILEPATH__ + config.__FOLDERNAME__ + "/mostfreq_" + config.__FILENAME__ 
+	popFile = config.__FILEPATH__ + "/mostfreq_" + config.__FILENAME__ 
+	
 	# if already have populations
 	fileCheck = Path(popFile)
 	if fileCheck.is_file():
@@ -47,7 +49,8 @@ INPUT: filename
 OUTPUT: csv called "identical_chr1_159203314-159283887.vcf"
 '''
 def getPopsIdentical(filename):
-	popFile = config.__FILEPATH__ + config.__FOLDERNAME__ + "/identical_" + config.__FILENAME__ 
+	# popFile = config.__FILEPATH__ + config.__FOLDERNAME__ + "/identical_" + config.__FILENAME__ 
+	popFile = config.__FILEPATH__ + "/identical_" + config.__FILENAME__ 
 	
 	# if already have populations
 	fileCheck = Path(popFile)
@@ -121,7 +124,8 @@ def replacePop(df, replaceType):
 
 def main():
 	print("*****STARTING POP COUNTER*****")
-	distinctFile = config.__FILEPATH__ + config.__FOLDERNAME__ + "/distinct_" + config.__FILENAME__
-
+	distinctFile = config.__FILEPATH__ + "distinct_" + config.__FILENAME__
+# 	distinctFile = config.__FILEPATH__ + config.__FOLDERNAME__ + "/distinct_" + config.__FILENAME__
+	
 	getPopsMostFreq(distinctFile)
 	getPopsIdentical(distinctFile)
