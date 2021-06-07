@@ -18,12 +18,17 @@ def main():
                       help="select by region (GRCh38)", metavar="chr#:#-#")
     parser.add_option("-a", "--all", dest="all", default=False, action="store_true",
                       help="run for all of chr 1")
-    parser.add_option("-f", "--folder", dest="foldername", default=False, type='string',
+    parser.add_option("-c", "--custom", dest="foldername", default=False, type='string',
                       help="select a custom folder name (otherwise, is chr#:#-#)")
+    parser.add_option("-f", "--filter", dest="filter", default=False, action="store_true",
+                      help="filters data to only include original 2504 individuals")
+    
     (options, args) = parser.parse_args()
 
     option_dict = vars(options)
 
+    if option_dict.get('filter'):
+        config.__FILTERED__ = True
     if option_dict.get('all'):
         print('run for all of chromosome 1')
         print("TO IMPLEMENT (settings.py)")

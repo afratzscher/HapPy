@@ -65,5 +65,10 @@ if __name__ == "__main__":
     Y = "TAGGACAGTAGGACAAGACTAGACCAGGACATAGCA"
     m = len(X)
     n = len(Y)
+
+#results
+#     X = 'ACATAGGACAGTAGGACAAGACTA'
+# Y = 'TAGGACAGTAGGACAAGACTAGACCAGGACATAGCA'
+# sub = 'TAGGACAGTAGGACAAGACTA'
  
     printLCSSubStr(X, Y, m, n)

@@ -10,6 +10,7 @@ __FOLDERNAME__ = ""
 __GROUPING__ = ['pop', 'super'] 
 __MOSTFREQ__ = 1 # 1 if yes, 0 if no
 __EMAIL__ = ""
+__FILTERED__ = False
 
 # __REFVER__ = "38" # depreceated -> can only use version 38 now
 __ANNOTATIONRELEASE__ = ""

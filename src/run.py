@@ -13,6 +13,7 @@ import distinct
 import visualization
 import popcounts
 import userfile
+import time
 
 '''
 FUNCTION: computation()
@@ -21,12 +22,22 @@ INPUT: none
 OUTPUT: none
 '''
 def computation():
+	start_time = time.time()
 	cleaner.main()
+	print("--- cleaner %s seconds ---" % (time.time() - start_time))
+	start_time = time.time()
 	haplotypes.main()
+	print("--- haplo %s seconds ---" % (time.time() - start_time))
+	start_time = time.time()
 	distinct.main()
+	print("--- distinct %s seconds ---" % (time.time() - start_time))
+	start_time = time.time()
 	popcounts.main()
+	print("--- popocount %s seconds ---" % (time.time() - start_time))
+	start_time = time.time()
 	# visualization.main()
 	userfile.main()
+	print("--- sequence %s seconds ---" % (time.time() - start_time))
 
 def main():
 	computation()

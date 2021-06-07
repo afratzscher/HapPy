@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 import math
 from pathlib import Path
+import time
 
 '''
 FUNCTION: getHaplotypes(filename)
@@ -32,10 +33,10 @@ def getHaplotypes(filename):
 
 	# get unambiguous haplotypes
 	df = getUnambiguous(df)
-
+	
 	# split into maternal and paternal haplotype
 	df = splitHaplotypes(df)
-	
+
 	# replace with N all outside of start/end
 	for i in df.columns:
 		if i not in ['POS', 'ID', 'REF', 'ALT']:
@@ -51,7 +52,8 @@ def getHaplotypes(filename):
 				if endidx:
 					idx = endidx[0]
 					df.loc[idx:len(df.index) - 4, i] = 'N'
-					
+
+	## TO DO: SPEED THIS UP! -> currently 350ish seconds for this (majority of time in this file)
 	# replace values with nucleotides (only if SNP -> if ref, keep as '-')
 	# also count indel 
 	for (index,row) in df.iterrows():

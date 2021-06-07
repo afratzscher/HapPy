@@ -1,0 +1,85 @@
+# TO DO: read annotRelease from file and UPDATE once in a while
+## TO DO: ask for email
+from Bio import Entrez
+import xmltodict
+import ujson
+
+
+# def getInfo():
+
+
+'''
+FUNCTION: eSearch(ext, nt)
+PURPOSE: makes call to database
+INPUT: ext (term to search) and nt (database to search)
+OUTPUT: results from search
+'''
+def eSearch():
+	Entrez.email = "afratzscher@yahoo.com"
+	paramEutils = {'usehistory': 'Y'} # use entrez search history to cache results
+	
+	db = 'gene'
+	term =  '"Homo sapiens"[Organism] AND ("genetype protein coding"[Properties] AND alive[prop] \
+		AND (NC_000001[nucl_accn] AND 000000000001[CHRPOS] : 000248956422[CHRPOS]))'
+
+	eSearch = Entrez.esearch(db=db, term=term, sort='Location', **paramEutils)
+
+	res = Entrez.read(eSearch)
+
+	paramEutils['WebEnv'] = res['WebEnv']
+	paramEutils['query_key'] = res['QueryKey']
+	paramEutils['rettype'] = 'xml' #report as xml
+	paramEutils['retstart'] = 0
+
+	result = Entrez.esummary(db=db, **paramEutils)
+	xml = result.read()
+
+	# convert xml to python dict object for convenient parsing
+	dsdocs = xmltodict.parse(xml)
+	return dsdocs
+
+def query():
+	lst = []
+	# getInfo()
+	dsdocs = eSearch()
+	length=0
+	#get set of dbVar DocumentSummary (dsdocs) and print report for each (ds)
+	for ds in dsdocs ['eSummaryResult']['DocumentSummarySet']['DocumentSummary']:
+		length+=1
+		geneName = ds['Name']
+		# print(geneName)
+		loc = ds['MapLocation']
+		if geneName == 'FAM151A':
+			loc = 'p'
+		loc = ''.join(filter(str.isalpha, loc))
+		if loc == 'p': # p is short arm
+			loc = 'short'
+		if loc == 'q': # q is long arm
+			loc = 'long'
+		for p in ds['LocationHist']['LocationHistType']:
+			if p['AnnotationRelease'] == annotRelease:
+				start = int(p['ChrStart'])
+				end = int(p['ChrStop'])
+				# if loc == 'long':
+				# 	lst.append({'gene': geneName, 'start': start, 'end': end})
+				lst.append({'gene': geneName, 'start': start, 'end': end, 'arm': loc})
+				break
+			break
+	lst = sorted(lst, key = lambda i: i['start'])
+	with open('data.json', 'w', encoding='utf-8') as f:
+		ujson.dump(lst, f, ensure_ascii=False, indent=4)
+							
+
+def main():
+	print("*****STARTING QUERY*****")
+	global annotRelease 
+	global chrom
+	annotRelease = '109.20210514'
+	query()
+	# for x in range(1, 25):
+	# 	chrom = str(x)
+	# 	print(chrom)
+	# 	query()
+
+if __name__ == '__main__':
+	main()
