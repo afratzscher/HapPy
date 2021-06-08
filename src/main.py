@@ -11,11 +11,7 @@ import run
 import os
 import time
 
-def main():
-	# INSERT EMAIL HERE
-	# config.__EMAIL__ = "example@example.com"
-	config.__EMAIL__ = "afratzscher@yahoo.com"
-	
+def main():	
 	start_time = time.time()
 	settings.main()
 	print("--- settings %s seconds ---" % (time.time() - start_time))
@@ -27,6 +23,7 @@ def main():
 	# print(config.__GENESTART__)
 	# print(config.__GENEEND__)
 	# print(config.__GENENAME__)
+	# print(config.__CHRVERSION__)
 
 	# config.__START__ = int('159203314')
 	# config.__END__ = int('159283574')

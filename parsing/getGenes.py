@@ -3,6 +3,7 @@
 from Bio import Entrez
 import xmltodict
 import ujson
+import os
 
 
 # def getInfo():
@@ -38,7 +39,7 @@ def eSearch():
 	dsdocs = xmltodict.parse(xml)
 	return dsdocs
 
-def query():
+def query(chrom):
 	lst = []
 	# getInfo()
 	dsdocs = eSearch()
@@ -62,11 +63,13 @@ def query():
 				end = int(p['ChrStop'])
 				# if loc == 'long':
 				# 	lst.append({'gene': geneName, 'start': start, 'end': end})
-				lst.append({'gene': geneName, 'start': start, 'end': end, 'arm': loc})
+				lst.append({'gene': geneName, 'chr': chrom, 'start': start, 'end': end, 'arm': loc})
 				break
 			break
 	lst = sorted(lst, key = lambda i: i['start'])
-	with open('data.json', 'w', encoding='utf-8') as f:
+	head, tail = os.path.split(os.getcwd())
+	fname = head + "/src/data.json"
+	with open(fname, 'w', encoding='utf-8') as f:
 		ujson.dump(lst, f, ensure_ascii=False, indent=4)
 							
 
@@ -75,7 +78,8 @@ def main():
 	global annotRelease 
 	global chrom
 	annotRelease = '109.20210514'
-	query()
+	chrom = 1
+	query(chrom)
 	# for x in range(1, 25):
 	# 	chrom = str(x)
 	# 	print(chrom)
