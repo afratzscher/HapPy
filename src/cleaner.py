@@ -31,7 +31,7 @@ def manualclean(df):
 	df = df[df['ID'] != 'rs529460769']
 	return df
 '''
-FUNCTION: clean()
+FUNCTION: cleanFiltered()
 PURPOSE: removes samples that are not part the 2504 
 		individuals for phase 3 AND removes samples
 		with > 1 heterozygous SNP

@@ -1,44 +1,124 @@
 '''
 FILE: run.py
-PURPOSE: runs computations (after data has been retrieved)
+PURPOSE: main entry point to application
 INPUT: none
 OUTPUT: none
-CREATED BY: Anne-Sophie Fratzscher
 '''
 import config
+from optparse import OptionParser
+import search
+import pandas as pd
 import time
+import fetch
 import cleaner
 import haplotypes
 import distinct
 import visualization
 import popcounts
 import userfile
-import time
 
-'''
-FUNCTION: computation()
-PURPOSE: runs algorithm
-INPUT: none
-OUTPUT: none
-'''
-def computation():
-	start_time = time.time()
-	cleaner.main()
-	print("--- cleaner %s seconds ---" % (time.time() - start_time))
-	start_time = time.time()
-	haplotypes.main()
-	print("--- haplo %s seconds ---" % (time.time() - start_time))
-	start_time = time.time()
-	distinct.main()
-	print("--- distinct %s seconds ---" % (time.time() - start_time))
-	start_time = time.time()
-	popcounts.main()
-	print("--- popocount %s seconds ---" % (time.time() - start_time))
-	start_time = time.time()
-	# visualization.main()
-	userfile.main()
-	print("--- sequence %s seconds ---" % (time.time() - start_time))
+def options(opts):
+    option_dict = vars(opts)
 
-def main():
-	computation()
-	
+    if option_dict.get('filter'):
+        config.__FILTERED__ = True
+    if option_dict.get('all'):
+        print('run for all of chromosome 1')
+        print("TO IMPLEMENT (settings.py)")
+        return(2)
+
+    if option_dict.get('gene') and option_dict.get('region'):
+        print("Select either gene or region (not both)")
+        exit(0)
+
+    if option_dict.get('foldername'):
+        config.__FOLDERNAME__ = option_dict.get('foldername')
+
+    # if given gene, search for region in gene database
+    if option_dict.get('gene'):
+        config.__GENENAME__ = option_dict.get('gene')
+        if config.__FOLDERNAME__ == '':
+            config.__FOLDERNAME__ = config.__GENENAME__
+        errCode = search.main()
+        if errCode == -1: # gene not found
+            return(-1)
+        return(0)
+
+    elif option_dict.get('region'):
+        print("TO FIX -> add gene AND whole region as vars...")
+        print("TO DO: also fix haplotype (before/after DNE b/c same as gene)")
+        if not 'chr' in option_dict.get('region'):
+            print("Incorrect format. Use '-h' to get help")
+            exit(0)
+        string = option_dict.get('region').split(':')
+        config.__CHR__ = string[0][3]
+        string = string[1].split("-")
+        if(string[0]=='' or string[1]==''):
+            print("Incorrect format. Use '-h' to get help")
+            exit(-1)
+        config.__START__ = int(string[0])
+        config.__END__ = int(string[1])
+        config.__GENESTART__ = int(string[0])
+        config.__GENEEND__ = int(string[1])
+
+        if config.__FOLDERNAME__ == '':
+            config.__FOLDERNAME__ = 'chr'+config.__CHR__+":"+str(config.__START__)+"-"+str(config.__END__)
+
+        df = pd.read_csv('GRCh38_chr_versions.txt', sep='\t')
+        df = df[df['chr'] == config.__CHR__]
+        config.__CHRVERSION__ = df['version'][0]
+        return(0)
+    return(-1)
+
+def execute():
+    print('data notes')
+    print(config.__CHR__)
+    print(config.__START__)
+    print(config.__END__)
+    print(config.__GENESTART__)
+    print(config.__GENEEND__)
+    print(config.__GENENAME__)
+    print(config.__CHRVERSION__)
+    print(config.__FILENAME__)
+    # config.__START__ = int('159203314')
+    # config.__END__ = int('159283574')
+    # config.__GENESTART__ = int('159204875')
+    # config.__GENEEND__ = int('159206500')
+    # print(config.__FILTERED__)
+
+    start_time = time.time()
+    fetch.main()
+    print("--- selection %s seconds ---" % (time.time() - start_time))
+    cleaner.main()
+    print("--- cleaner %s seconds ---" % (time.time() - start_time))
+    start_time = time.time()
+    haplotypes.main()
+    print("--- haplo %s seconds ---" % (time.time() - start_time))
+    start_time = time.time()
+    distinct.main()
+    print("--- distinct %s seconds ---" % (time.time() - start_time))
+    start_time = time.time()
+    popcounts.main()
+    print("--- popocount %s seconds ---" % (time.time() - start_time))
+    start_time = time.time()
+    # visualization.main()
+    userfile.main()
+    print("--- sequence %s seconds ---" % (time.time() - start_time))
+
+def main(opts):
+    start_time = time.time()
+    errcode = options(opts) 
+    print("--- settings %s seconds ---" % (time.time() - start_time))
+
+    # decide if run once or for multiple genes
+    if (errcode == -1):
+        print("Incorrect format. Use '-h' to get help")
+    elif (errcode == 0): # single gene
+        print('here')
+        execute()
+    elif (errcode == 2): # all genes
+        print('multi')
+        execute()
+
+    
+        
