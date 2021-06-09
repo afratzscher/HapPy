@@ -90,7 +90,7 @@ def cleanFiltered(individuals):
 	print('init numb')
 	print(len(cleanedsamples))
 	print('claen')
-	df = manualclean(df)
+	# df = manualclean(df)
 	df.to_csv(cleanedName, sep="\t", mode='a', index=False)
 	
 '''CLEAN WITHOUT FILTERING INDIVIDUALS'''
@@ -149,7 +149,7 @@ def clean():
 		if not(i in cleanedsamples):
 			del df[i]
 
-	df = manualclean(df)
+	# df = manualclean(df)
 	df.to_csv(cleanedName, sep="\t", mode='a', index=False)
 
 '''

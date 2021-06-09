@@ -57,11 +57,17 @@ def getCounts(filename):
 
 	for ((aidx,a),(bidx,b)) in itertools.combinations(enumerate(haplotypes), 2):
 		if not (haplotypes[aidx] is None or haplotypes[bidx] is None):
-			if a == b: # identical haplotypes
+			if (a == b) and (a is not None) and (b is not None): # identical haplotypes
 				haplotypes[bidx] = None
 				identical[aidx] = identical[aidx] + ", " + identical[bidx]
 				identical[bidx] = None
-				subSample[aidx] = subSample[aidx] + ", " + subSample[bidx]
+				if subSample[aidx] == None:
+					subSample[bidx] = samples[aidx]
+				elif subSample[bidx] == None:
+					subSample[bidx] = subSample[aidx]
+				else:
+					subSample[aidx] = subSample[aidx] + ", " + subSample[bidx]
+
 			else:
 				if ((b == (len(samples) - 1)) and (longest[aidx] == 0)): # if didnt find subseqeuence, set longest to 2
 					longest[aidx] = 2
