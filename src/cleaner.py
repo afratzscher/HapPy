@@ -174,7 +174,7 @@ def main():
 	fileCheck = Path(cleanedName)
 	if fileCheck.is_file():
 		return
-
+	
 	if config.__FILTERED__:
 		individuals = getIndividuals()
 		cleanFiltered(individuals)
