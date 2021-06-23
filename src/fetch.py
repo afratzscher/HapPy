@@ -6,6 +6,13 @@ OUTPUT: error code (-1 if error)
 CREATED BY: Anne-Sophie Fratzscher
 '''
 
+'''
+IMPORTANT:
+MOST RECENT UPDATE: APRIL 2021, released dbSNP build 155 (154 in 2020) 
+-> changed from GCF_000001405.38.gz to GCF_000001405.39.gz
+-> NOTE: may need to check yearly OR keep copy of file on machine
+'''
+
 import config
 import os
 import pandas as pd
@@ -69,9 +76,9 @@ def makeCommands(name, ftp, cmds, xy):
 	#define ftp
 	cmds.append(ftp+name)
 
-	#define dbSNP ftp -> GRCH38 BUILD 154 
+	#define dbSNP ftp -> GRCH38 BUILD 155
 	baseUrl = 'dbSNPFTP=ftp://ftp.ncbi.nih.gov/snp/redesign/latest_release/VCF/'
-	refVersion = 'GCF_000001405.38.gz'
+	refVersion = 'GCF_000001405.39.gz' #HAS BEEN CHANGED JUNE 10th 2021
 	cmds.append(baseUrl+refVersion)
 
 	#command to get data file

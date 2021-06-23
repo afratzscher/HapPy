@@ -128,6 +128,12 @@ def getUnambiguous(df):
 	after = d.drop(d[d['POS'] < config.__GENEEND__].index) # SNPs after gene
 	after = after.reset_index(drop=True)
 	start = before.notna()[::-1].idxmax()
+	# for some genes, DONT have SNP between end of prev gene and start of gene (e.g. PYDC5)
+	# if before.empty:
+	# 	start = 0.0
+	# 	print('start empty')
+	# else:
+	# 	start = before.notna()[::-1].idxmax()
 	end = after.notna().idxmax()
 	endsecond = after.notna().cumsum().eq(2).idxmax() #index of second SNP after gene
 	within = gene.notna().sum(axis = 0) # number of hetero SNP in gene (0 or 1)

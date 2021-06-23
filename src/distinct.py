@@ -24,6 +24,7 @@ def getCounts(filename):
 	df = pd.read_csv(filename, sep="\t")
 	info = df.head(3) #stores id, ref, alt (not used but important)
 	df = df.drop(df.head(3).index)
+	df = df.loc[(df.iloc[:, 1:-5] != 'N').any(1)] # removes haplotypes where only N
 	start = df['start']
 	end = df['end']
 	indel_num = df['indel_num']
@@ -56,42 +57,43 @@ def getCounts(filename):
 		# for b (shorter haplotype being compared), 0 initially, 1 if subsamples already found for haplo
 
 	for ((aidx,a),(bidx,b)) in itertools.combinations(enumerate(haplotypes), 2):
-		if not (haplotypes[aidx] is None or haplotypes[bidx] is None):
-			if (a == b) and (a is not None) and (b is not None): # identical haplotypes
-				haplotypes[bidx] = None
-				identical[aidx] = identical[aidx] + ", " + identical[bidx]
-				identical[bidx] = None
-				if subSample[aidx] == None:
-					subSample[bidx] = samples[aidx]
-				elif subSample[bidx] == None:
-					subSample[bidx] = subSample[aidx]
-				else:
-					subSample[aidx] = subSample[aidx] + ", " + subSample[bidx]
-
-			else:
-				if ((b == (len(samples) - 1)) and (longest[aidx] == 0)): # if didnt find subseqeuence, set longest to 2
-					longest[aidx] = 2
-				if (longest[aidx] != 2 and found[aidx] != 1):
-				# compare SNP by SNP
-					occ = [b.find('A'), b.find('G'), b.find('C'),
-									b.find('T'), b.find('-')] #, len(b)+1] # find first non N
-					startidx = min(i for i in occ if i >= 0) # if one of them is 0, means no N
-					endidx = max(b.rfind('A'), b.rfind('G'), b.rfind('C'),
-									b.rfind('T'), b.rfind('-')) #len(b)-1)
-					if b[startidx:endidx+1] == a[startidx:endidx+1]:
-						if (longest[aidx] == 0):
-							if subSample[aidx] == None:
-								subSample[bidx] = samples[aidx]
-							elif subSample[bidx] == None:
-								subSample[bidx] = subSample[aidx]
-							else:
-								subSampleList = set(list(subSample[bidx].split(", "))).union(set(list(subSample[aidx].split(", "))))
-								for i in identical[aidx].split(", "):
-									subSampleList.remove(i)
-								subSample[bidx] = ', '.join(subSampleList)
-								subSample[aidx] = None
-							longest[aidx] = 1
-							found[bidx] = 1
+		if haplotypes[aidx] != -1:
+			if not (haplotypes[aidx] is None or haplotypes[bidx] is None):
+				if (a == b) and (a is not None) and (b is not None): # identical haplotypes
+					haplotypes[bidx] = None
+					identical[aidx] = identical[aidx] + ", " + identical[bidx]
+					identical[bidx] = None
+					if subSample[aidx] == None:
+						subSample[bidx] = samples[aidx]
+					elif subSample[bidx] == None:
+						subSample[bidx] = subSample[aidx]
+					else:
+						subSample[aidx] = subSample[aidx] + ", " + subSample[bidx]
+				else: # not identical haplotypes				
+					if ((b == (len(samples) - 1)) and (longest[aidx] == 0)): # if didnt find subseqeuence, set longest to 2
+						longest[aidx] = 2
+					if (longest[aidx] != 2 and found[aidx] != 1):
+					# compare SNP by SNP
+						occ = [b.find('A'), b.find('G'), b.find('C'),
+										b.find('T'), b.find('-')] #, len(b)+1] # find first non N
+						# assumes have non N -> earlier case is if ALL N
+						startidx = min(i for i in occ if i >= 0) # if one of them is 0, means no N
+						endidx = max(b.rfind('A'), b.rfind('G'), b.rfind('C'),
+										b.rfind('T'), b.rfind('-')) #len(b)-1)
+						if b[startidx:endidx+1] == a[startidx:endidx+1]:
+							if (longest[aidx] == 0):
+								if subSample[aidx] == None:
+									subSample[bidx] = samples[aidx]
+								elif subSample[bidx] == None:
+									subSample[bidx] = subSample[aidx]
+								else:
+									subSampleList = set(list(subSample[bidx].split(", "))).union(set(list(subSample[aidx].split(", "))))
+									for i in identical[aidx].split(", "):
+										subSampleList.remove(i)
+									subSample[bidx] = ', '.join(subSampleList)
+									subSample[aidx] = None
+								longest[aidx] = 1
+								found[bidx] = 1
 
 	# get counts
 	for i in range(0, len(counts)):
@@ -124,6 +126,7 @@ def getCounts(filename):
 	# sort by count number (descending)
 	countsorted = df.sort_values(by='counts', ascending=False)
 	df2 = pd.concat([info, countsorted])
+	print(df2)
 	df2.to_csv(countFile, sep="\t", mode='a', index = False)
 	
 	getDistinct(df, info)
@@ -143,6 +146,7 @@ def getDistinct(df, info):
 	df.to_csv(distinctFile, sep="\t", mode='a', index = False)
 	
 def main():
+	print('here')
 	print('*****STARTING DISTINCT*****')
 	global countFile
 	global distinctFile
