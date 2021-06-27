@@ -22,6 +22,10 @@ def eSearch():
 	db = 'gene'
 	term =  '"Homo sapiens"[Organism] AND ("genetype protein coding"[Properties] AND alive[prop] \
 		AND (NC_000001[nucl_accn] AND 000000000001[CHRPOS] : 000248956422[CHRPOS]))'
+	# term =  '"Homo sapiens"[Organism] AND ("genetype protein coding"[Properties] AND alive[prop] \
+	# 	AND (NC_000001[nucl_accn] AND 158999974[CHRPOS] : 159000312[CHRPOS]))'
+	# term =  '"Homo sapiens"[Organism] AND ("genetype protein coding"[Properties] AND alive[prop] \
+	# 	AND (NC_000001[nucl_accn] AND 159397464[CHRPOS] : 159440966[CHRPOS]))'
 
 	eSearch = Entrez.esearch(db=db, term=term, sort='Location', **paramEutils)
 
@@ -48,7 +52,15 @@ def query(chrom):
 	for ds in dsdocs ['eSummaryResult']['DocumentSummarySet']['DocumentSummary']:
 		length+=1
 		geneName = ds['Name']
-		# print(geneName)
+		print(geneName)
+		if 'pseudogene' in ds['Description']:
+			pseudoflag = True
+		else:
+			pseudoflag = False
+		if 'pseudogene' in ds['Description']: # excludes some pseudogenes that are not filtered out, including OR10J4
+			pseudo = 'pseudogene'
+		else:
+			pseudo = 'gene'
 		loc = ds['MapLocation']
 		if geneName == 'FAM151A':
 			loc = 'p'
@@ -61,9 +73,17 @@ def query(chrom):
 			if p['AnnotationRelease'] == annotRelease:
 				start = int(p['ChrStart'])
 				end = int(p['ChrStop'])
+				if start > end:
+					strand = 'minus'
+					minusflag = True
+				else:
+					minusflag = False
+					strand = 'plus'
 				# if loc == 'long':
 				# 	lst.append({'gene': geneName, 'start': start, 'end': end})
-				lst.append({'gene': geneName, 'chr': chrom, 'start': start, 'end': end, 'arm': loc})
+				if not minusflag and not pseudoflag:
+					lst.append({'gene': geneName, 'chr': chrom, 'start': start, 'end': end, 'arm': loc, 'type': pseudo, 'strand': strand})
+					# lst.append({'gene': geneName, 'chr': chrom, 'start': start, 'end': end, 'arm': loc})
 				break
 			break
 	lst = sorted(lst, key = lambda i: i['start'])
@@ -78,6 +98,8 @@ def main():
 	global annotRelease 
 	global chrom
 	annotRelease = '109.20210514'
+
+	# currently just for chrom 1
 	chrom = 1
 	query(chrom)
 	# for x in range(1, 25):
