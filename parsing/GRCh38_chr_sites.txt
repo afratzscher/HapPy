@@ -1,3 +1,4 @@
+# TO FIX STILL
 chr	name	telomere1	short	centromere	long	telomere2
 
 #should be 10001 - 123400000, 143184588-248946422

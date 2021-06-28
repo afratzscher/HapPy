@@ -4,6 +4,7 @@ from Bio import Entrez
 import xmltodict
 import ujson
 import os
+import jsonToTxt
 
 
 # def getInfo():
@@ -22,10 +23,6 @@ def eSearch():
 	db = 'gene'
 	term =  '"Homo sapiens"[Organism] AND ("genetype protein coding"[Properties] AND alive[prop] \
 		AND (NC_000001[nucl_accn] AND 000000000001[CHRPOS] : 000248956422[CHRPOS]))'
-	# term =  '"Homo sapiens"[Organism] AND ("genetype protein coding"[Properties] AND alive[prop] \
-	# 	AND (NC_000001[nucl_accn] AND 158999974[CHRPOS] : 159000312[CHRPOS]))'
-	# term =  '"Homo sapiens"[Organism] AND ("genetype protein coding"[Properties] AND alive[prop] \
-	# 	AND (NC_000001[nucl_accn] AND 159397464[CHRPOS] : 159440966[CHRPOS]))'
 
 	eSearch = Entrez.esearch(db=db, term=term, sort='Location', **paramEutils)
 
@@ -52,7 +49,7 @@ def query(chrom):
 	for ds in dsdocs ['eSummaryResult']['DocumentSummarySet']['DocumentSummary']:
 		length+=1
 		geneName = ds['Name']
-		print(geneName)
+		# print(geneName)
 		if 'pseudogene' in ds['Description']:
 			pseudoflag = True
 		else:
@@ -75,13 +72,11 @@ def query(chrom):
 				end = int(p['ChrStop'])
 				if start > end:
 					strand = 'minus'
-					minusflag = True
 				else:
-					minusflag = False
 					strand = 'plus'
 				# if loc == 'long':
 				# 	lst.append({'gene': geneName, 'start': start, 'end': end})
-				if not minusflag and not pseudoflag:
+				if not pseudoflag:
 					lst.append({'gene': geneName, 'chr': chrom, 'start': start, 'end': end, 'arm': loc, 'type': pseudo, 'strand': strand})
 					# lst.append({'gene': geneName, 'chr': chrom, 'start': start, 'end': end, 'arm': loc})
 				break
@@ -106,6 +101,8 @@ def main():
 	# 	chrom = str(x)
 	# 	print(chrom)
 	# 	query()
+	jsonToTxt.main()
+
 
 if __name__ == '__main__':
 	main()
