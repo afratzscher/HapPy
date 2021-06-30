@@ -4,8 +4,9 @@ from Bio import Entrez
 import xmltodict
 import ujson
 import os
-import jsonToTxt
-
+from datetime import date, time 
+import pandas as pd
+import getRange
 
 # def getInfo():
 
@@ -59,13 +60,20 @@ def query(chrom):
 		else:
 			pseudo = 'gene'
 		loc = ds['MapLocation']
+
+		#NOTE: FAM151A and CYP4X1 are on short arm, but missing annotation in file for some reason...
 		if geneName == 'FAM151A':
 			loc = 'p'
+		if geneName == 'CYP4X1':
+			loc = 'p'
+
 		loc = ''.join(filter(str.isalpha, loc))
+		loc = ''.join(set(loc)) # removes duplicate letter (sometimes get qq or pp)
 		if loc == 'p': # p is short arm
 			loc = 'short'
 		if loc == 'q': # q is long arm
 			loc = 'long'
+
 		for p in ds['LocationHist']['LocationHistType']:
 			if p['AnnotationRelease'] == annotRelease:
 				start = int(p['ChrStart'])
@@ -87,6 +95,14 @@ def query(chrom):
 	with open(fname, 'w', encoding='utf-8') as f:
 		ujson.dump(lst, f, ensure_ascii=False, indent=4)
 							
+def jsonToTxt():
+	today = date.today().strftime("%B %d, %Y")
+	direct = '/'.join(os.getcwd().split('/')[:-1]) + "/src"
+	file = direct +  "/data.json"
+	txtfile = open(direct + "/data.txt", "w")
+	txtfile.write("# Updated on: " + today + "\n")
+	df = pd.read_json(file)
+	df.to_csv(txtfile, index = False, mode = 'a')
 
 def main():
 	print("*****STARTING QUERY*****")
@@ -101,7 +117,8 @@ def main():
 	# 	chrom = str(x)
 	# 	print(chrom)
 	# 	query()
-	jsonToTxt.main()
+	jsonToTxt() 
+	getRange.main()
 
 
 if __name__ == '__main__':

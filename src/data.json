@@ -526,7 +526,7 @@
         "chr": 1,
         "start": 2228318,
         "end": 2310212,
-        "arm": "pp",
+        "arm": "short",
         "type": "gene",
         "strand": "plus"
     },
@@ -931,7 +931,7 @@
         "chr": 1,
         "start": 6785451,
         "end": 7769705,
-        "arm": "pp",
+        "arm": "short",
         "type": "gene",
         "strand": "plus"
     },
@@ -1462,7 +1462,7 @@
         "chr": 1,
         "start": 12230029,
         "end": 12512046,
-        "arm": "pp",
+        "arm": "short",
         "type": "gene",
         "strand": "plus"
     },
@@ -1921,7 +1921,7 @@
         "chr": 1,
         "start": 15847706,
         "end": 15940455,
-        "arm": "pp",
+        "arm": "short",
         "type": "gene",
         "strand": "plus"
     },
@@ -3424,7 +3424,7 @@
         "chr": 1,
         "start": 27604177,
         "end": 27534244,
-        "arm": "pp",
+        "arm": "short",
         "type": "gene",
         "strand": "minus"
     },
@@ -3928,7 +3928,7 @@
         "chr": 1,
         "start": 32292082,
         "end": 32333627,
-        "arm": "pp",
+        "arm": "short",
         "type": "gene",
         "strand": "plus"
     },
@@ -4936,7 +4936,7 @@
         "chr": 1,
         "start": 40862362,
         "end": 40861053,
-        "arm": "pp",
+        "arm": "short",
         "type": "gene",
         "strand": "minus"
     },
@@ -5269,7 +5269,7 @@
         "chr": 1,
         "start": 43650148,
         "end": 43705517,
-        "arm": "pp",
+        "arm": "short",
         "type": "gene",
         "strand": "plus"
     },
@@ -5701,7 +5701,7 @@
         "chr": 1,
         "start": 46303615,
         "end": 46277461,
-        "arm": "pp",
+        "arm": "short",
         "type": "gene",
         "strand": "minus"
     },
@@ -5827,7 +5827,7 @@
         "chr": 1,
         "start": 46961363,
         "end": 47055431,
-        "arm": "",
+        "arm": "short",
         "type": "gene",
         "strand": "plus"
     },
@@ -5953,7 +5953,7 @@
         "chr": 1,
         "start": 50048054,
         "end": 50203771,
-        "arm": "pp",
+        "arm": "short",
         "type": "gene",
         "strand": "plus"
     },
@@ -6520,7 +6520,7 @@
         "chr": 1,
         "start": 58546725,
         "end": 56994777,
-        "arm": "pp",
+        "arm": "short",
         "type": "gene",
         "strand": "minus"
     },
@@ -6529,7 +6529,7 @@
         "chr": 1,
         "start": 58546725,
         "end": 58480718,
-        "arm": "pp",
+        "arm": "short",
         "type": "gene",
         "strand": "minus"
     },
@@ -7330,7 +7330,7 @@
         "chr": 1,
         "start": 84398483,
         "end": 84415894,
-        "arm": "pp",
+        "arm": "short",
         "type": "gene",
         "strand": "plus"
     },
@@ -7717,7 +7717,7 @@
         "chr": 1,
         "start": 91498967,
         "end": 91525763,
-        "arm": "pp",
+        "arm": "short",
         "type": "gene",
         "strand": "plus"
     },
@@ -8032,7 +8032,7 @@
         "chr": 1,
         "start": 99262955,
         "end": 99309583,
-        "arm": "pp",
+        "arm": "short",
         "type": "gene",
         "strand": "plus"
     },
@@ -8473,7 +8473,7 @@
         "chr": 1,
         "start": 109397939,
         "end": 109309574,
-        "arm": "pp",
+        "arm": "short",
         "type": "gene",
         "strand": "minus"
     },
@@ -8779,7 +8779,7 @@
         "chr": 1,
         "start": 111204790,
         "end": 111185968,
-        "arm": "pp",
+        "arm": "short",
         "type": "gene",
         "strand": "minus"
     },
@@ -9301,7 +9301,7 @@
         "chr": 1,
         "start": 117210984,
         "end": 117143586,
-        "arm": "pp",
+        "arm": "short",
         "type": "gene",
         "strand": "minus"
     },
@@ -12001,7 +12001,7 @@
         "chr": 1,
         "start": 156601478,
         "end": 156594300,
-        "arm": "qq",
+        "arm": "long",
         "type": "gene",
         "strand": "minus"
     },
@@ -12433,7 +12433,7 @@
         "chr": 1,
         "start": 159132350,
         "end": 159059225,
-        "arm": "qq",
+        "arm": "long",
         "type": "gene",
         "strand": "minus"
     },
@@ -12712,7 +12712,7 @@
         "chr": 1,
         "start": 160523262,
         "end": 160485029,
-        "arm": "qq",
+        "arm": "long",
         "type": "gene",
         "strand": "minus"
     },
@@ -13918,7 +13918,7 @@
         "chr": 1,
         "start": 176209086,
         "end": 175944830,
-        "arm": "qq",
+        "arm": "long",
         "type": "gene",
         "strand": "minus"
     },
@@ -14134,7 +14134,7 @@
         "chr": 1,
         "start": 180502576,
         "end": 180269662,
-        "arm": "qq",
+        "arm": "long",
         "type": "gene",
         "strand": "minus"
     },
@@ -14440,7 +14440,7 @@
         "chr": 1,
         "start": 185734390,
         "end": 186190948,
-        "arm": "qq",
+        "arm": "long",
         "type": "gene",
         "strand": "plus"
     },
@@ -14746,7 +14746,7 @@
         "chr": 1,
         "start": 198639024,
         "end": 198757475,
-        "arm": "qq",
+        "arm": "long",
         "type": "gene",
         "strand": "plus"
     },
@@ -15862,7 +15862,7 @@
         "chr": 1,
         "start": 211259365,
         "end": 211316384,
-        "arm": "qq",
+        "arm": "long",
         "type": "gene",
         "strand": "plus"
     },
@@ -16069,7 +16069,7 @@
         "chr": 1,
         "start": 214551676,
         "end": 214348699,
-        "arm": "qq",
+        "arm": "long",
         "type": "gene",
         "strand": "minus"
     },
@@ -16438,7 +16438,7 @@
         "chr": 1,
         "start": 224434796,
         "end": 224385145,
-        "arm": "qq",
+        "arm": "long",
         "type": "gene",
         "strand": "minus"
     },
@@ -17221,7 +17221,7 @@
         "chr": 1,
         "start": 236394285,
         "end": 236484929,
-        "arm": "qq",
+        "arm": "long",
         "type": "gene",
         "strand": "plus"
     },
@@ -17410,7 +17410,7 @@
         "chr": 1,
         "start": 243255417,
         "end": 243503682,
-        "arm": "qq",
+        "arm": "long",
         "type": "gene",
         "strand": "plus"
     },
@@ -17428,7 +17428,7 @@
         "chr": 1,
         "start": 243851078,
         "end": 243488232,
-        "arm": "qq",
+        "arm": "long",
         "type": "gene",
         "strand": "minus"
     },
