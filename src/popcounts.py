@@ -69,7 +69,7 @@ OUTPUT: dataframe
 '''
 def replacePop(df, replaceType):
 	# tf = pd.read_csv('integrated_call_samples_v3.20130502.ALL.panel.txt', sep="\t")
-	tf = pd.read_csv('20130606_g1k_3202_samples_ped_population.txt', sep=" ")
+	tf = pd.read_csv('20130606_g1k_3202_samples_ped_population.txt', sep=" ") # for 3202 NYGC data
 	# add columns for these pops
 	for x in config.__POPS__:
 		df[x] = 0

@@ -126,8 +126,8 @@ def getCounts(filename):
 	# sort by count number (descending)
 	countsorted = df.sort_values(by='counts', ascending=False)
 	df2 = pd.concat([info, countsorted])
-	print(df2)
-	df2.to_csv(countFile, sep="\t", mode='a', index = False)
+	# print(df2)
+	# df2.to_csv(countFile, sep="\t", mode='a', index = False)
 	
 	getDistinct(df, info)
 
@@ -151,11 +151,11 @@ def main():
 	global countFile
 	global distinctFile
 	filename = config.__FILEPATH__ + "haplotypes_" + config.__FILENAME__
-	countFile = config.__FILEPATH__ + "count_" + config.__FILENAME__
+	# countFile = config.__FILEPATH__ + "count_" + config.__FILENAME__
 	distinctFile = config.__FILEPATH__ +  "distinct_" + config.__FILENAME__
 
 	# if already have counts
-	fileCheck = Path(countFile)
+	fileCheck = Path(distinctFile)
 	if fileCheck.is_file():
 		return
 

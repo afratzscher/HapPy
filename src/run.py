@@ -16,6 +16,7 @@ import distinct
 import visualization
 import popcounts
 import userfile
+import haplotypeGraph
 
 def options(opts):
     option_dict = vars(opts)
@@ -96,9 +97,11 @@ def execute():
     popcounts.main()
     print("--- popocount %s seconds ---" % (time.time() - start_time))
     start_time = time.time()
-    visualization.main()
-    userfile.main()
-    print("--- sequence %s seconds ---" % (time.time() - start_time))
+    # visualization.main()
+    # userfile.main()
+    # print("--- sequence %s seconds ---" % (time.time() - start_time))
+
+    haplotypeGraph.main()
 
 def main(opts):
     start_time = time.time()

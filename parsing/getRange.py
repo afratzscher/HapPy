@@ -55,10 +55,10 @@ def getRange(df, first, last, longFlag):
 
 def toCSV(df, file):
 	today = date.today().strftime("%B %d %Y")
-	direct = '/'.join(os.getcwd().split('/')[:-1]) + "/src"
 
 	df = df.replace(False, "")
-	f = open(direct + "/updated_data.csv", "w", newline='')
+	name = file[:-5] + '.csv'
+	f = open(name, "w", newline='')
 	f.write("# Updated on: " + today + "\n")
 	f.write("# NOTE: short arm = nt 10000-125184587; long arm = nt 143184588-248946422 \n")
 
@@ -83,14 +83,21 @@ def main():
 	shortarm =  df[df['arm'] == 'short']
 	shortarm = getRange(shortarm, 10000, 125184587, False)
 	file = direct + "/chr1_short.json"
+	shortarm.insert(loc=0, column='gene_num', value=range(1, len(shortarm)+1))
 	shortarm.to_json(file, orient='records', indent=4)
+	toCSV(shortarm, file)
 
 	# then do forst long arm
 	longarm =  df[df['arm'] == 'long'].reset_index(drop=True)
 	longarm = getRange(longarm, 143184588, 248946422, True)
 	file = direct + "/chr1_long.json"
+	longarm.insert(loc=0, column='gene_num', value=range(1, len(longarm)+1))
 	longarm.to_json(file, orient='records', indent=4)
+	toCSV(longarm, file)
 
+	#have file with both arms together
+	del longarm['gene_num']
+	del shortarm['gene_num']
 	df = shortarm.append(longarm)
 	df = df.sort_values('start').reset_index(drop=True)
 
@@ -105,7 +112,6 @@ def main():
 
 	file = direct + "/updated_data.json"
 	df.to_json(file, orient='records', indent=4)
-
 	toCSV(df, file)
 
 if __name__ == '__main__':
