@@ -1,5 +1,6 @@
 # TO DO: read annotRelease from file and UPDATE once in a while
 ## TO DO: ask for email
+#NOTE: changes start/end values so that 1st nt has value of 1 (vs. stored as 1st nt has index of 0)#
 from Bio import Entrez
 import xmltodict
 import ujson
@@ -76,8 +77,8 @@ def query(chrom):
 
 		for p in ds['LocationHist']['LocationHistType']:
 			if p['AnnotationRelease'] == annotRelease:
-				start = int(p['ChrStart'])
-				end = int(p['ChrStop'])
+				start = int(p['ChrStart']) + 1 # bc 1st nt has index of 0 (instead of 1)
+				end = int(p['ChrStop']) + 1
 				if start > end:
 					strand = 'minus'
 				else:
@@ -113,10 +114,6 @@ def main():
 	# currently just for chrom 1
 	chrom = 1
 	query(chrom)
-	# for x in range(1, 25):
-	# 	chrom = str(x)
-	# 	print(chrom)
-	# 	query()
 	jsonToTxt() 
 	getRange.main()
 

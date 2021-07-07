@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import os
 
 def getVisualization(df, name, cscopy, fullFlag):
+	name = config.__GENENAME__ + "_" + name
 	if df.empty: # if nothing found
 		plt.title("No %s".center(80) %(name))
 		if fullFlag == 0: # NOT full length haplotype

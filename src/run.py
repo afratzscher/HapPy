@@ -97,10 +97,9 @@ def execute():
     popcounts.main()
     print("--- popocount %s seconds ---" % (time.time() - start_time))
     start_time = time.time()
-    # visualization.main()
-    # userfile.main()
-    # print("--- sequence %s seconds ---" % (time.time() - start_time))
-
+    visualization.main()
+    userfile.main()
+    print("--- sequence %s seconds ---" % (time.time() - start_time))
     haplotypeGraph.main()
 
 def main(opts):
