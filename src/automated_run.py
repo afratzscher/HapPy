@@ -18,10 +18,7 @@ def makeCommands(names):
 		cmds.append(cmd)
 
 	return cmds
-
-
-
-
+	
 def main():
 	names = ['ACKR1', 'AIM2', 'APCS', 'CADM3',
 		'FCER1A', 'IFI16', 'OR10J1', 'CRP', 

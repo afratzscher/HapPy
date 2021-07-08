@@ -22,6 +22,12 @@ OUTPUT: haplotype csv
 def getHaplotypes(filename):
 	df = pd.read_csv(filename, sep="\t")
 	
+	#if no samples left (i.e. all samples have >1 hetero SNP), warn user and quit
+	if len(df.columns) == 9: # means no samples
+		print("*****WARNING: NO SAMPLES REMAINING AFTER CLEANING, ENDING PROGRAM*****")
+		print("*****This means there are no haplotypes that can be found using this approach*****")
+		quit()
+
 	# only keep samples, SNP, and ref/alt nucleotide
 	infoNames = {'CHROM', 'QUAL','FILTER','INFO','FORMAT'}
 	for i in infoNames:
@@ -127,15 +133,16 @@ def getUnambiguous(df):
 	before = d.drop(d[d['POS'] > config.__GENESTART__].index) # SNPs before gene
 	after = d.drop(d[d['POS'] < config.__GENEEND__].index) # SNPs after gene
 	after = after.reset_index(drop=True)
-	start = before.notna()[::-1].idxmax()
 	# for some genes, DONT have SNP between end of prev gene and start of gene (e.g. PYDC5)
-	# if before.empty:
-	# 	start = 0.0
-	# 	print('start empty')
-	# else:
-	# 	start = before.notna()[::-1].idxmax()
-	end = after.notna().idxmax()
-	endsecond = after.notna().cumsum().eq(2).idxmax() #index of second SNP after gene
+	if before.empty: # for if run region instead of genes
+		start = None
+		end = None
+		endsecond = None
+		print('start empty')
+	else:
+		start = before.notna()[::-1].idxmax()
+		end = after.notna().idxmax()
+		endsecond = after.notna().cumsum().eq(2).idxmax() #index of second SNP after gene
 	within = gene.notna().sum(axis = 0) # number of hetero SNP in gene (0 or 1)
 
 	for i in df.columns:

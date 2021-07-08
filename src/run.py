@@ -46,6 +46,7 @@ def options(opts):
         return(0)
 
     elif option_dict.get('region'):
+        config.__REGIONFLAG__ = True
         print("TO FIX -> add gene AND whole region as vars...")
         print("TO DO: also fix haplotype (before/after DNE b/c same as gene)")
         if not 'chr' in option_dict.get('region'):
@@ -57,13 +58,15 @@ def options(opts):
         if(string[0]=='' or string[1]==''):
             print("Incorrect format. Use '-h' to get help")
             exit(-1)
+
+        # CURRENTLY: looks at whole region as gene and as start/end
         config.__START__ = int(string[0])
         config.__END__ = int(string[1])
         config.__GENESTART__ = int(string[0])
         config.__GENEEND__ = int(string[1])
 
         if config.__FOLDERNAME__ == '':
-            config.__FOLDERNAME__ = 'chr'+config.__CHR__+":"+str(config.__START__)+"-"+str(config.__END__)
+            config.__FOLDERNAME__ = 'chr'+config.__CHR__+"_"+str(config.__START__)+"-"+str(config.__END__)
 
         df = pd.read_csv('GRCh38_chr_versions.txt', sep='\t')
         df = df[df['chr'] == config.__CHR__]

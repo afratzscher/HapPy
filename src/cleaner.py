@@ -168,6 +168,7 @@ def main():
 	global filename
 	global cleanedName
 	filename = config.__FILEPATH__ + config.__FILENAME__
+	config.__FILENAME__ = config.__FILENAME__[len('1000G_'):]
 	cleanedName = config.__FILEPATH__ + "cleaned_" + config.__FILENAME__
 	
 	# if already cleaned

@@ -22,9 +22,13 @@ import read_vcf
 import fetch
 
 def checkAutosomes(filepath):
-	config.__FILENAME__ = "1000G_chr" + (str(int(config.__CHR__)) + "_" +
-						str(config.__START__) + "-" + 
-						str(config.__END__) + ".vcf")
+	if config.__REGIONFLAG__: # means region, not gene
+		config.__FILENAME__ = "1000G_chr" + (str(int(config.__CHR__)) + "_" +
+							str(config.__START__) + "-" + 
+							str(config.__END__) + ".vcf")
+
+	else:
+		config.__FILENAME__ = "1000G_" + config.__GENENAME__ +  ".vcf"
 	return
 
 def createFolder(filepath):
@@ -42,12 +46,10 @@ def run_commands(*commands):
 	os.system(' ; '.join(commands))
 
 def combine():
-	raw = read_vcf.read_vcf(config.__FILEPATH__+'raw_chr' + str(config.__CHR__) + "_" + str(config.__START__) + "-" 
-			+ str(config.__END__) + ".vcf")
+	raw = read_vcf.read_vcf(config.__FILEPATH__+ "raw_" + config.__FILENAME__[len('1000G_'):])
 	chrom = str(config.__CHR__)
 
-	dbSNP = pd.read_csv(config.__FILEPATH__+'dbSNP_chr'+ chrom + "_" + str(config.__START__) + "-" 
-		+ str(config.__END__) + ".vcf", sep='\t', header=None) # ISSUE HERE
+	dbSNP = pd.read_csv(config.__FILEPATH__+ "dbSNP_" + config.__FILENAME__[len('1000G_'):], sep='\t', header=None) # ISSUE HERE
 	dbSNP.columns = ['POS', 'ID', 'REF', 'ALT']
 
 	for i in range(0, len(raw.index)):
