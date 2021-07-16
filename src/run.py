@@ -87,24 +87,15 @@ def execute():
 
     start_time = time.time()
     fetch.main()
-    print("--- selection %s seconds ---" % (time.time() - start_time))
     cleaner.main()
-    print("--- cleaner %s seconds ---" % (time.time() - start_time))
-    start_time = time.time()
     haplotypes.main()
-    print("--- haplo %s seconds ---" % (time.time() - start_time))
-    start_time = time.time()
     distinct.main()
-    print("--- distinct %s seconds ---" % (time.time() - start_time))
-    start_time = time.time()
     popcounts.main()
-    print("--- popocount %s seconds ---" % (time.time() - start_time))
-    start_time = time.time()
     visualization.main()
     userfile.main()
-    print("--- sequence %s seconds ---" % (time.time() - start_time))
     haplotypeGraph.main()
-
+    print("--- total time %s seconds ---" % (time.time() - start_time))
+    
 def main(opts):
     start_time = time.time()
     errcode = options(opts) 

@@ -194,6 +194,12 @@ def main():
 	if config.__MOSTFREQ__ == 1:
 		getInput('most frequent')
 
+	fileCheck = Path(fullFile)
+	if fileCheck.is_file():
+		df = pd.read_csv(fullFile, sep="\t")
+	else:
+		df = visualizeFull()
+
 	# runs for multiple diff. groupings (e.g. population)
 	# for i in config.__GROUPING__:
 	# 	getInput(i)

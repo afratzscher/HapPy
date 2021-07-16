@@ -20,9 +20,8 @@ def makeCommands(names):
 	return cmds
 	
 def main():
-	names = ['ACKR1', 'AIM2', 'APCS', 'CADM3',
-		'FCER1A', 'IFI16', 'OR10J1', 'CRP', 
-		'OR10J5', 'PYDC5', 'PYHIN1']
+	names = ['OR10R2', 'OR6Y1', 
+		'OR6P1', 'OR10X1', 'OR6K2', 'OR6K3', 'OR6K6']
 	cmd = makeCommands(names)
 	run_commands(*cmd)
 
