@@ -1,6 +1,7 @@
 import config
 import pandas as pd
 import json
+import os
 
 def getVersion():
 	versions = pd.read_csv('GRCh38_chr_versions.txt', sep = '\t')
@@ -8,7 +9,7 @@ def getVersion():
 
 
 def getRange():
-	df = pd.read_json('updated_data.json')
+	df = pd.read_json(os.getcwd() + '/data/chr1.json')
 
 	# swap start/end for minus
 	if config.__GENENAME__ in df.gene.values:

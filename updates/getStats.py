@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 def main():
-	direct = '/'.join(os.getcwd().split('/')[:-1]) + "/src"
+	direct = '/'.join(os.getcwd().split('/')[:-1]) + "/src/data"
 	file = direct +  "/data.json"
 	df = pd.read_json(file)
 	print('# genes on chr 1: ', df.shape[0])

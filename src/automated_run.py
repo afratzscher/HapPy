@@ -20,8 +20,7 @@ def makeCommands(names):
 	return cmds
 	
 def main():
-	names = ['OR10R2', 'OR6Y1', 
-		'OR6P1', 'OR10X1', 'OR6K2', 'OR6K3', 'OR6K6']
+	names = ['PYHIN1', 'OR10X1']
 	cmd = makeCommands(names)
 	run_commands(*cmd)
 

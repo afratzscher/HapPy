@@ -137,13 +137,6 @@ def clean():
 				df.at[-1,i] = totalSNPS
 			dups.append(i)
 
-	print(len(dups))
-	print('dups')
-	print(len(cleanedsamples))
-	print('cleaned')
-	print(len(initsamples))
-	print('init numb')
-
 	# remove samples from file that are not part of cleanedsamples list
 	for i in initsamples:
 		if not(i in cleanedsamples):

@@ -1,11 +1,11 @@
 import pandas as pd
 
 def select(before, after):
-	df = pd.read_json('updated_data.json')
+	df = pd.read_json('data.json')
 	idx = df[df['gene'] == 'ACKR1'].index.tolist()[0]
 	genes = df.loc[idx-before:idx+after]
 	print(genes)
-	overlap = genes.loc[genes['overlap']].reindex().sort_index(ascending=False)
+	overlap = genes.loc[genes['overlap'] > 0].reindex().sort_index(ascending=False)
 	overlap['length'] = overlap['end'] - overlap['start']
 		#overlapping genes have 'True' in overlap column
 		#always pick longest one (NOTE: values already correct, dont need to be changed)

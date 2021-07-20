@@ -45,21 +45,19 @@ def toFile(genes, res):
 def main():
 	global direct
 	direct = '/'.join(os.getcwd().split('/')[:-1]) + "/results/"
+
+	#OLD
 	# genes = ['MNDA', 'PYHIN1', 'AIM2', 'CADM3', 'ACKR1', 'FCER1A', 'OR10J1', 
 	#  'OR10J5', 'APCS', 'CRP']
 
+	#15 BEFORE ACKR1
 	# genes = ['OR10K2', 'OR10K1', 'OR10R2', 'OR6Y1', 'OR6P1', 'OR10X1', 'SPTA1',
 		# 'OR6K2', 'OR6K3', 'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 'CADM3',
 		#  'ACKR1', 'FCER1A', 'OR10J1', 'OR10J5', 'APCS', 'CRP']
 
-	# genes = ['OR10K1', 'OR10R2', 'OR6Y1', 
-
-	genes = ['OR10K1', 'OR10R2', 'OR6Y1',
-	'OR6P1', 'OR10X1', 'SPTA1','OR6K2', 'OR6K3',
-	'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16', 'AIM2'] # 'CADM3',
-	 # 'ACKR1', 'FCER1A', 'OR10J1', 'OR10J5', 'APCS', 'CRP']
-
-
+	# genes = ['OR10K2', 'OR10K1', 'OR10R2', 'OR6Y1', 'OR6P1']
+	genes = ['OR6K2', 'OR6K3', 'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16',
+		'AIM2', 'CADM3', 'ACKR1', 'FCER1A', 'OR10J1', 'OR10J5', 'APCS'] #, 'CRP']
 
 	pairs = list(zip(genes, genes[1:]))
 
@@ -85,7 +83,6 @@ def main():
 		maxdf = df[mutuals].shape[0] - 1
 		maxnextdf = nextDF[mutuals].shape[0] + maxdf
 		allSNPs = df[mutuals].append(nextDF[mutuals]).reset_index(drop = True) # combines df for both genes with same SNPs
-
 		#NOTE: df[mutuals] CAN have duplicates (b/c different outside this range, but only looking at specific range)
 		#-> NEED TO ACCOUNT FOR THIS 
 
@@ -113,7 +110,6 @@ def main():
 		# at end, set df to " nextgene"
 		df, geneID = nextDF, nextID
 
-	
 	print('done getting vals')
 	res = []
 	for i in range(0, len(overlap)-1):
@@ -136,25 +132,34 @@ def main():
 			if u[-1] == v[0]]
 		# print(res)	
 		if not res: # if res empty
-			res = [u +  ["-"] for u in temp]
-			print('empty')
+			print('empty when adding: ', genes[i+2])
+	print(str(len(res)) + ' LCSHs')
+	# print(res)
 
+	#TO CHECK
+	# res = []
 	# for i in reversed(range(1, len(overlap))):
 	# 	temp = res
 	# 	print(i,i-1)
 	# 	if i == (len(overlap)-1):
 	# 		res = overlap[-1]
-	# 	res = [(v[0], u) for u in res for v in overlap[i-1]
-	# 		if u[0] == v[1]]
+	# 		res = [[v[1], u[0], u[1]] for u in res for v in overlap[i-1]
+	# 			if u[1] == v[0]]
+	# 	else:
+	# 		res = [[v[1]] + u for u in res for v in overlap[i-1]
+	# 		if u[-1] == v[0]]
+
 	# 	if not res: # if res empty
-	# 		res = [("-", u) for u in temp]
+	# 		res = [["-"]+ u for u in temp]
 	# 		print('empty')
-	
 	# print(res)
+	# # print(res)
 	# # print(len(res))
-	print('starting to file')
-	print(len(res))
-	toFile(genes, res)
+	# print(len(res))
+	# print(res)
+	# toFile(genes, res)
+
+	
 
 if __name__ == '__main__':
 	main()
