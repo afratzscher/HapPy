@@ -10,7 +10,12 @@ def fetchDF(gene):
 	file = direct + gene + "/full_length_haplotypes_" + gene + ".vcf"
 	df = pd.read_csv(file, sep="\t")
 	df = df[df.columns[~df.isnull().any()]] # removes columns that dont have SNPs (keep columns with rs ID)
-	df = df[3:][:].reset_index()
+	df = df[3:][:].reset_index() # removes REF and ALT and ID rows
+
+	# get 10 most frequent full length haplotypes
+	df = df.sort_values(by='counts', ascending=False)
+	df = df.iloc[0:25, :]
+
 	del df['index']
 	idx = df.columns.get_loc("start")
 	beginidx = df.columns.get_loc("identical")
@@ -51,13 +56,22 @@ def main():
 	#  'OR10J5', 'APCS', 'CRP']
 
 	#15 BEFORE ACKR1
-	# genes = ['OR10K2', 'OR10K1', 'OR10R2', 'OR6Y1', 'OR6P1', 'OR10X1', 'SPTA1',
-		# 'OR6K2', 'OR6K3', 'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 'CADM3',
-		#  'ACKR1', 'FCER1A', 'OR10J1', 'OR10J5', 'APCS', 'CRP']
+	# genes = ['OR10K2', 'OR10K1', 'OR10R2','OR6Y1', 'OR6P1', 'OR10X1', 'SPTA1',
+	# 	'OR6K2', 'OR6K3', 'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 'CADM3',
+	# 	 'ACKR1', 'FCER1A', 'OR10J1', 'OR10J5', 'APCS', 'CRP']
 
-	# genes = ['OR10K2', 'OR10K1', 'OR10R2', 'OR6Y1', 'OR6P1']
-	genes = ['OR6K2', 'OR6K3', 'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16',
-		'AIM2', 'CADM3', 'ACKR1', 'FCER1A', 'OR10J1', 'OR10J5', 'APCS'] #, 'CRP']
+	# names = ['SLC25A44', 'PMF1-BGLAP', 'GLMP', 'VHLL', 'CCT3', 
+	# 	'RHBG', 'MEF2D', 'IQGAP3', 'TTC24', 'NAXE',
+	# 	'HAPLN2', 'BCAN', 'NES', 'CRABP2', 'METTL25B', 
+	# 	'MRPL24', 'HDGF', 'PRCC', 'NTRK1', 'PEAR1',
+	
+	genes = ['NTRK1', 'PEAR1',
+		'ARHGEF11', 'ETV3L', 'ETV3', 'FCRL5', 'FCRL4', 
+		'FCRL3', 'FCRL2', 'FCRL1', 'CD5L', 'KIRREL1', 
+		'CD1D', 'CD1A', 'CD1B', 'CD1E', 'OR10T2', 'OR10K2', 
+		'OR10K1', 'OR10R2', 'OR6Y1', 'OR6P1', 'OR10X1', 'SPTA1', 
+		'OR6K2', 'OR6K3', 'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 
+		'CADM3', 'ACKR1', 'FCER1A', 'OR10J1', 'OR10J5', 'APCS'] #, 'CRP']
 
 	pairs = list(zip(genes, genes[1:]))
 
@@ -158,7 +172,6 @@ def main():
 	# print(len(res))
 	# print(res)
 	# toFile(genes, res)
-
 	
 
 if __name__ == '__main__':
