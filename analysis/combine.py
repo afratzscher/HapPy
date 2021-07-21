@@ -73,6 +73,10 @@ def main():
 		'OR6K2', 'OR6K3', 'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 
 		'CADM3', 'ACKR1', 'FCER1A', 'OR10J1', 'OR10J5', 'APCS'] #, 'CRP']
 
+	genes = [ 'SPTA1', 
+	'OR6K2', 'OR6K3', 'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 
+	'CADM3', 'ACKR1', 'FCER1A', 'OR10J1', 'OR10J5', 'APCS'] #, 'CRP']
+
 	pairs = list(zip(genes, genes[1:]))
 
 	overlap = []
@@ -129,47 +133,39 @@ def main():
 	for i in range(0, len(overlap)-1):
 		temp = res
 		print(i,i+1)
-		# print(res)
 		if i == 0:
 			res = overlap[0]
-			# print(res)
 			res = [[u[0], u[1], v[1]] for u in res for v in overlap[i+1]
 				if u[1] == v[0]]
-			# print(type(overlap[0][1][1]))
 			test = (res[0] + [(overlap[0][1][1])])
-			# print(test[-1])
-			# print(test)
-			# print(overlap[0][1])
-			# break
 		else:
 			res = [u + [v[1]] for u in res for v in overlap[i+1]
 			if u[-1] == v[0]]
-		# print(res)	
 		if not res: # if res empty
 			print('empty when adding: ', genes[i+2])
+			res = temp
+			print(len(res), " LCSH")
+			break
 	print(str(len(res)) + ' LCSHs')
 	# print(res)
 
-	#TO CHECK
-	# res = []
-	# for i in reversed(range(1, len(overlap))):
-	# 	temp = res
-	# 	print(i,i-1)
-	# 	if i == (len(overlap)-1):
-	# 		res = overlap[-1]
-	# 		res = [[v[1], u[0], u[1]] for u in res for v in overlap[i-1]
-	# 			if u[1] == v[0]]
-	# 	else:
-	# 		res = [[v[1]] + u for u in res for v in overlap[i-1]
-	# 		if u[-1] == v[0]]
-
-	# 	if not res: # if res empty
-	# 		res = [["-"]+ u for u in temp]
-	# 		print('empty')
-	# print(res)
-	# # print(res)
-	# # print(len(res))
-	# print(len(res))
+	res = []
+	for i in reversed(range(1, len(overlap))):
+		temp = res
+		print(i,i-1)
+		if i == (len(overlap)-1):
+			res = overlap[-1]
+			res = [[v[0], u[0], u[1]] for u in res for v in overlap[i-1]
+				if u[0] == v[1]]
+		else:
+			res = [[v[0]] + u for u in res for v in overlap[i-1]
+				if u[0] == v[1]]
+		if not res: # if res empty
+			print('empty when adding: ', genes[i-2])
+			res = temp
+			print(len(res), " LCSH")
+			break
+	print(str(len(res)) + " LCSH")
 	# print(res)
 	# toFile(genes, res)
 	
