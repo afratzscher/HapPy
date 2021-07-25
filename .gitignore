@@ -1,2 +1,10 @@
 .DS_Store
-*.vcf
+1000G_*.vcf
+cleaned_*.vcf
+dbSNP_*.vcf
+distinct_*.vcf
+haplotypes_*.vcf
+identical_*.vcf
+mostfreq_*.vcf
+raw_*.vcf
+sequence_*.vcf
