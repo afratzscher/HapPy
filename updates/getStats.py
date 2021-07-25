@@ -3,9 +3,11 @@ import os
 
 def main():
 	direct = '/'.join(os.getcwd().split('/')[:-1]) + "/src/data"
-	file = direct +  "/data.json"
+	file = direct +  "/chr1.json"
 	df = pd.read_json(file)
 	print('# genes on chr 1: ', df.shape[0])
+	df = df[df['skip'] == False]
+	print('# analyzed genes on chr 1: ', df.shape[0])
 	# longarm = df[df['arm'] == 'long']
 	# shortarm = df[df['arm'] == 'short']
 	# # tmp = df[df['arm'] != 'short']

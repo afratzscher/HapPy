@@ -85,7 +85,7 @@ def visualizeFull():
 	info = df.head(3) #stores id, ref, alt (not used but important)
 	df = df.drop(df.head(3).index)
 	df = df[df['start'] <= config.__START__]
-	df = df[df['end'] >= int(float(lastSNPpos))]
+	df = df[df['end'] >= int(float(lastSNPpos.rsplit('.')[0]))]
 	df = pd.concat([info, df])
 	df.to_csv(fullFile, sep="\t", mode='a', index = False)
 	return(df)

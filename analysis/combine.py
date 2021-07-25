@@ -24,6 +24,7 @@ def fetchDF(gene):
 	haploID = df.iloc[:, df.columns.get_loc("haplotypeID")]
 	df = df.iloc[:, beginidx+1:idx] # keeps only columns with SNV data
 	df.columns = newCols[beginidx:idx-1] # have to use SNP IDs instead of vals b/c sometimes stored as 1.0, others as 1
+
 	return df, haploID, rank
 
 def toFile(genes, res):
@@ -147,7 +148,7 @@ def run(genes):
 			res = [[[v[0][0]] + u[0], [u[1][0]+v[1][0]]] for u in res for v in overlap[i-1]
 				if u[0][0] == v[0][1]]
 		if not res: # if res empty
-			print('empty when adding: ', genes[i-2])
+			print('empty when adding: ', genes[i-1])
 			res = temp
 			print(len(res), " LCSH")
 			break
@@ -158,7 +159,7 @@ def run(genes):
 		#if > 10,000, keep only first 10,000
 		if len(res) > threshold:
 			tmp = res[:threshold]
-			print('reduced from ', len(res), ' to ', len(tmp), ' for ', genes[i-2])
+			print('reduced from ', len(res), ' to ', len(tmp), ' for ', genes[i-1])
 			res = tmp
 
 	print(str(len(res)) + " LCSH")
@@ -173,35 +174,69 @@ def main():
 	global threshold
 	direct = '/'.join(os.getcwd().split('/')[:-1]) + "/results/"
 	offset = 10000 # to distinguish 2 df
-	threshold = 1000000
+	threshold = 10000 # 1 million takes too long, 500000 takes too long as well
 
-	
-	#OLD
-	# genes = ['MNDA', 'PYHIN1', 'AIM2', 'CADM3', 'ACKR1', 'FCER1A', 'OR10J1', 
-	#  'OR10J5', 'APCS', 'CRP']
-
-	#40 BEFORE ACKR1
-	# genes = ['ARHGEF11', 'ETV3L', 'ETV3', 'FCRL5', 'FCRL4', 
-	# 	'FCRL3', 'FCRL2', 'FCRL1', 'CD5L', 'KIRREL1', 
-	# 	'CD1D', 'CD1A', 'CD1B', 'CD1E', 'OR10T2', 
-	# 	'OR10K2', 'OR10K1', 'OR10R2', 'OR6Y1', 'OR6P1', 
-	# 	'OR10X1', 'SPTA1', 'OR6K2', 'OR6K3', 'OR6K6', 
-	# 	'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 'CADM3', 
-	# 	'ACKR1', 'FCER1A', 'OR10J1', 'OR10J5', 'APCS'] #, 'CRP']
-
-	# genes = ['OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 'CADM3', 
-	# 	'ACKR1', 'FCER1A', 'OR10J1', 'OR10J5', 'APCS'] #, 'CRP']
-
-	genes = ['FCRL1', 'CD5L', 'KIRREL1', 
+	#100 + ACKR1 + 5
+	genes = ['UBAP2L', 'HAX1', 'AQP10', 'ATP8B2', 'IL6R', 
+		'UBE2Q1', 'ADAR', 'KCNN3', 'PMVK', 'PBXIP1', 
+		'PYGO2', 'SHC1', 'CKS1B', 'FLAD1', 'LENEP', 
+		'ZBTB7B', 'DCST1', 'ADAM15', 'EFNA4', 'EFNA3', 
+		'EFNA1', 'SLC50A1', 'DPM3', 'KRTCAP2', 'TRIM46', 
+		'MUC1', 'THBS3', 'GBA', 'FAM189B', 'SCAMP3', 
+		'CLK2', 'HCN3', 'FDPS', 'RUSC1', 'ASH1L', 
+		'MSTO1', 'DAP3', 'GON4L', 'SYT11', 'RIT1', 
+		'KHDC4', 'RXFP4', 'ARHGEF2', 'SSR2', 'UBQLN4', 
+		'LAMTOR2', 'RAB25', 'MEX3A', 'LMNA', 'SEMA4A', 
+		'SLC25A44', 'PMF1-BGLAP', 'GLMP', 'VHLL', 'CCT3', 
+		'RHBG', 'MEF2D', 'IQGAP3', 'TTC24', 'NAXE', 
+		'HAPLN2', 'BCAN', 'NES', 'CRABP2', 'METTL25B', 
+		'MRPL24', 'HDGF', 'PRCC', 'NTRK1', 'PEAR1', 
+		'ARHGEF11', 'ETV3L', 'ETV3', 'FCRL5', 'FCRL4', 
+		'FCRL3', 'FCRL2', 'FCRL1', 'CD5L', 'KIRREL1', 
 		'CD1D', 'CD1A', 'CD1B', 'CD1E', 'OR10T2', 
 		'OR10K2', 'OR10K1', 'OR10R2', 'OR6Y1', 'OR6P1', 
 		'OR10X1', 'SPTA1', 'OR6K2', 'OR6K3', 'OR6K6', 
 		'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 'CADM3', 
-		'ACKR1', 'FCER1A', 'OR10J1', 'OR10J5', 'APCS'] #, 'CRP']
-	# 		# if 25, have 241800
+		'ACKR1', 
+		'FCER1A', 'OR10J1', 'OR10J5', 'APCS', 'CRP']
 
-	# genes = ['PYHIN1', 'IFI16', 'AIM2', 'CADM3', 'ACKR1', 'FCER1A']
-	#EXPECTED 396 LCSH!
+	#BREAK DOWN
+	# 20 genes + ACKR1 = 21 genes -> STOPS AT KIRREL1
+	# 158100263 - 159283574 = 1,183,311 nt
+	genes = ['CD1D', 'CD1A', 'CD1B', 'CD1E', 'OR10T2', 
+		'OR10K2', 'OR10K1', 'OR10R2', 'OR6Y1', 'OR6P1', 
+		'OR10X1', 'SPTA1', 'OR6K2', 'OR6K3', 'OR6K6', 
+		'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 'CADM3', 
+		'ACKR1']	
+
+	#37 genes -> STOPS AT ARHGEF2
+	# 155991263 - 158178029 = 2,186,766 nt
+	genes = ['SSR2', 'UBQLN4', 
+		'LAMTOR2', 'RAB25', 'MEX3A', 'LMNA', 'SEMA4A',
+		'SLC25A44', 'PMF1-BGLAP', 'GLMP', 'VHLL', 'CCT3',
+		'RHBG', 'MEF2D', 'IQGAP3', 'TTC24', 'NAXE', 
+		'HAPLN2', 'BCAN', 'NES', 'CRABP2', 'METTL25B', 
+		'MRPL24', 'HDGF', 'PRCC', 'NTRK1', 'PEAR1', 
+		'ARHGEF11', 'ETV3L', 'ETV3', 'FCRL5', 'FCRL4', 
+		'FCRL3', 'FCRL2', 'FCRL1', 'CD5L', 'KIRREL1']
+
+	# works up to PYGO2-ARHGEF2 -> CONTINUE
+	# 154956100 - 156009047 = 1,052,947 nt
+	genes = ['PMVK', 'PBXIP1', 
+		'PYGO2', 'SHC1', 'CKS1B', 
+		'FLAD1', 'LENEP', 'ZBTB7B', 'DCST1', 'ADAM15', 
+		'EFNA4', 'EFNA3', 'EFNA1', 'SLC50A1', 'DPM3', 
+		'KRTCAP2', 'TRIM46', 'MUC1', 'THBS3', 'GBA',
+		'FAM189B', 'SCAMP3', 'CLK2', 'HCN3', 'FDPS', 
+		'RUSC1', 'ASH1L', 'MSTO1', 'DAP3', 'GON4L', 
+		'SYT11', 'RIT1','KHDC4', 'RXFP4', 'ARHGEF2']
+
+	
+
+		#7 so far TO CONTINUE
+	# genes = ['ATP8B2', 'IL6R', 'UBE2Q1', 'ADAR', 'KCNN3', 
+	# 	'PMVK', 'PBXIP1', 'PYGO2'] # STUFF LEFT TO ADD
+
 	run(genes)
 	
 
