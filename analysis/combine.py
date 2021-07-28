@@ -4,6 +4,7 @@ import pandas as pd
 from itertools import compress
 import itertools
 import math
+import numpy as np
 
 def fetchDF(gene):
 	file = direct + gene + "/full_length_haplotypes_" + gene + ".vcf"
@@ -20,7 +21,8 @@ def fetchDF(gene):
 
 	idx = df.columns.get_loc("start")
 	beginidx = df.columns.get_loc("identical")
-	rank = df.iloc[:, df.columns.get_loc("rank")]
+	# rank = df.iloc[:, df.columns.get_loc("rank")]
+	rank= np.sqrt(df['rank'])
 	haploID = df.iloc[:, df.columns.get_loc("haplotypeID")]
 	df = df.iloc[:, beginidx+1:idx] # keeps only columns with SNV data
 	df.columns = newCols[beginidx:idx-1] # have to use SNP IDs instead of vals b/c sometimes stored as 1.0, others as 1
@@ -51,7 +53,7 @@ def toFile(genes, res):
 	# df.to_csv('LCSH_158781205-159712288.csv')
 
 
-def run(genes):
+def run(genes, direction):
 	pairs = list(zip(genes, genes[1:]))
 
 	overlap = []
@@ -107,63 +109,75 @@ def run(genes):
 		# at end, set df to " nextgene"
 		df, rank = nextDF, nextRANK
 
-	#TO DO: FIX FOR DOWNSTREAM
-	# 1,3,2,40 = 10+9+7+1= 27
-	# 1,2,3,100 = 3+5+11+12 = 31
-	# res = [[[3, 2, 40], [26.0]], [[2, 3, 100], [25.0]]]
-	# overlap = [[((1, 3), (3.0, 2.0)), ((1, 2), (2.0, 3.0))]]
+	if direction == 'downstream':
+		# FOR DOWNSTREAM GENE ADDED
+		res = []
+		for i in range(0, len(overlap)-1):
+			temp = res
+			print(i,i+1, 'ADDING ', genes[i+2])
+			if i == 0:
+				res = overlap[0]
+				# res = [[u[0], u[1], v[1]] for u in res for v in overlap[i+1]
+				# 	if u[1] == v[0]]
+				res = [[[u[0][0], u[0][1], v[0][1]], [u[1][0] + u[1][1] + v[1][1]]] for u in res for v in overlap[i+1]
+					if u[0][1] == v[0][0]]
+			else:
+				# res = [u + [v[1]] for u in res for v in overlap[i+1]
+				# if u[-1] == v[0]]
+				res = [[u[0] + [v[0][1]], [u[1][0]+v[1][1]]] for u in res for v in overlap[i+1]
+					if u[0][-1] == v[0][0]]
+			if not res: # if res empty
+				print('empty when adding: ', genes[i+2])
+				res = temp
+				print(len(res), " LCSH")
+				break
 
-	# FOR DOWNSTREAM GENE ADDED
-	# res = []
-	# for i in range(0, len(overlap)-1):
-	# 	temp = res
-	# 	print(i,i+1)
-	# 	if i == 0:
-	# 		res = overlap[0]
-	# 		res = [[u[0], u[1], v[1]] for u in res for v in overlap[i+1]
-	# 			if u[1] == v[0]]
-	# 		test = (res[0] + [(overlap[0][1][1])])
-	# 	else:
-	# 		res = [u + [v[1]] for u in res for v in overlap[i+1]
-	# 		if u[-1] == v[0]]
-	# 	if not res: # if res empty
-	# 		print('empty when adding: ', genes[i+2])
-	# 		res = temp
-	# 		print(len(res), " LCSH")
-	# 		break
-	# print(str(len(res)) + ' LCSHs')
-	# # print(res)
+			#sort res by rank
+			res.sort(key = lambda x: x[1])
 
-	# FOR UPSTREAM GENE ADDED -> FOCUS ON THIS FOR NOW
-	num = 0 # number of LCSH -> IF exceeds threshold (set to 10,000 currently), remove 25%
-	res = []
-	for i in reversed(range(1, len(overlap))):
-		temp = res
-		print(i,i-1)
-		if i == (len(overlap)-1):
-			res = overlap[-1]
-			res = [[[v[0][0], u[0][0], u[0][1]], [v[1][0] + u[1][0] + u[1][1]]] for u in res for v in overlap[i-1]
-				if u[0][0] == v[0][1]]
-		else:
-			res = [[[v[0][0]] + u[0], [u[1][0]+v[1][0]]] for u in res for v in overlap[i-1]
-				if u[0][0] == v[0][1]]
-		if not res: # if res empty
-			print('empty when adding: ', genes[i-1])
-			res = temp
-			print(len(res), " LCSH")
-			break
+			#if > 10,000, keep only first 10,000
+			if len(res) > threshold:
+				tmp = res[:threshold]
+				print('reduced from ', len(res), ' to ', len(tmp), ' for ', genes[i+2])
+				res = tmp
 
-		#sort res by rank
-		res.sort(key = lambda x: x[1])
+		print(str(len(res)) + ' LCSHs\n\n')
+		# print(res)
 
-		#if > 10,000, keep only first 10,000
-		if len(res) > threshold:
-			tmp = res[:threshold]
-			print('reduced from ', len(res), ' to ', len(tmp), ' for ', genes[i-1])
-			res = tmp
+	if direction == 'upstream':
+		# FOR UPSTREAM GENE ADDED -> FOCUS ON THIS FOR NOW
+		res = []
+		for i in reversed(range(1, len(overlap))):
+			temp = res
+			print(i,i-1, 'ADDING ', genes[i-1])
+			if i == (len(overlap)-1):
+				res = overlap[-1]
+				res = [[[v[0][0], u[0][0], u[0][1]], [v[1][0] + u[1][0] + u[1][1]]] for u in res for v in overlap[i-1]
+					if u[0][0] == v[0][1]]
+			else:
+				res = [[[v[0][0]] + u[0], [u[1][0]+v[1][0]]] for u in res for v in overlap[i-1]
+					if u[0][0] == v[0][1]]
+			if not res: # if res empty
+				print('empty when adding: ', genes[i-1])
+				res = temp
+				print(len(res), " LCSH")
+				break
 
-	print(str(len(res)) + " LCSH")
-	# print(res)
+			#sort res by rank
+			res.sort(key = lambda x: x[1])
+
+			#if > 10,000, keep only first 10,000
+			if len(res) > threshold:
+				#if #10,000 has rank of 2 and so does 9999, remove BOTH
+				if res[threshold-1][1] == res[threshold][1]: 
+					tmp = [i for i in res if i[1] < res[threshold][1]]
+				else: # otherwise, take first 10,000 instances
+					tmp = res[:threshold]
+				tmp = res[:threshold]
+				print('reduced from ', len(res), ' to ', len(tmp), ' for ', genes[i-1])
+				res = tmp
+		print(str(len(res)) + " LCSH")
+		# print(res)
 
 	# toFile(genes, res)
 
@@ -174,71 +188,171 @@ def main():
 	global threshold
 	direct = '/'.join(os.getcwd().split('/')[:-1]) + "/results/"
 	offset = 10000 # to distinguish 2 df
-	threshold = 10000 # 1 million takes too long, 500000 takes too long as well
+	threshold = 10000 # 1 million takes too long, 500000 and 100,000 take too long as well
 
-	#100 + ACKR1 + 5
-	genes = ['UBAP2L', 'HAX1', 'AQP10', 'ATP8B2', 'IL6R', 
-		'UBE2Q1', 'ADAR', 'KCNN3', 'PMVK', 'PBXIP1', 
-		'PYGO2', 'SHC1', 'CKS1B', 'FLAD1', 'LENEP', 
-		'ZBTB7B', 'DCST1', 'ADAM15', 'EFNA4', 'EFNA3', 
-		'EFNA1', 'SLC50A1', 'DPM3', 'KRTCAP2', 'TRIM46', 
-		'MUC1', 'THBS3', 'GBA', 'FAM189B', 'SCAMP3', 
-		'CLK2', 'HCN3', 'FDPS', 'RUSC1', 'ASH1L', 
-		'MSTO1', 'DAP3', 'GON4L', 'SYT11', 'RIT1', 
-		'KHDC4', 'RXFP4', 'ARHGEF2', 'SSR2', 'UBQLN4', 
-		'LAMTOR2', 'RAB25', 'MEX3A', 'LMNA', 'SEMA4A', 
-		'SLC25A44', 'PMF1-BGLAP', 'GLMP', 'VHLL', 'CCT3', 
-		'RHBG', 'MEF2D', 'IQGAP3', 'TTC24', 'NAXE', 
-		'HAPLN2', 'BCAN', 'NES', 'CRABP2', 'METTL25B', 
-		'MRPL24', 'HDGF', 'PRCC', 'NTRK1', 'PEAR1', 
-		'ARHGEF11', 'ETV3L', 'ETV3', 'FCRL5', 'FCRL4', 
-		'FCRL3', 'FCRL2', 'FCRL1', 'CD5L', 'KIRREL1', 
-		'CD1D', 'CD1A', 'CD1B', 'CD1E', 'OR10T2', 
-		'OR10K2', 'OR10K1', 'OR10R2', 'OR6Y1', 'OR6P1', 
-		'OR10X1', 'SPTA1', 'OR6K2', 'OR6K3', 'OR6K6', 
-		'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 'CADM3', 
-		'ACKR1', 
-		'FCER1A', 'OR10J1', 'OR10J5', 'APCS', 'CRP']
-
-	#BREAK DOWN
-	# 20 genes + ACKR1 = 21 genes -> STOPS AT KIRREL1
-	# 158100263 - 159283574 = 1,183,311 nt
-	genes = ['CD1D', 'CD1A', 'CD1B', 'CD1E', 'OR10T2', 
-		'OR10K2', 'OR10K1', 'OR10R2', 'OR6Y1', 'OR6P1', 
-		'OR10X1', 'SPTA1', 'OR6K2', 'OR6K3', 'OR6K6', 
-		'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 'CADM3', 
-		'ACKR1']	
-
-	#37 genes -> STOPS AT ARHGEF2
-	# 155991263 - 158178029 = 2,186,766 nt
-	genes = ['SSR2', 'UBQLN4', 
-		'LAMTOR2', 'RAB25', 'MEX3A', 'LMNA', 'SEMA4A',
-		'SLC25A44', 'PMF1-BGLAP', 'GLMP', 'VHLL', 'CCT3',
-		'RHBG', 'MEF2D', 'IQGAP3', 'TTC24', 'NAXE', 
-		'HAPLN2', 'BCAN', 'NES', 'CRABP2', 'METTL25B', 
-		'MRPL24', 'HDGF', 'PRCC', 'NTRK1', 'PEAR1', 
-		'ARHGEF11', 'ETV3L', 'ETV3', 'FCRL5', 'FCRL4', 
-		'FCRL3', 'FCRL2', 'FCRL1', 'CD5L', 'KIRREL1']
-
-	# works up to PYGO2-ARHGEF2 -> CONTINUE
-	# 154956100 - 156009047 = 1,052,947 nt
-	genes = ['PMVK', 'PBXIP1', 
-		'PYGO2', 'SHC1', 'CKS1B', 
-		'FLAD1', 'LENEP', 'ZBTB7B', 'DCST1', 'ADAM15', 
-		'EFNA4', 'EFNA3', 'EFNA1', 'SLC50A1', 'DPM3', 
-		'KRTCAP2', 'TRIM46', 'MUC1', 'THBS3', 'GBA',
-		'FAM189B', 'SCAMP3', 'CLK2', 'HCN3', 'FDPS', 
-		'RUSC1', 'ASH1L', 'MSTO1', 'DAP3', 'GON4L', 
-		'SYT11', 'RIT1','KHDC4', 'RXFP4', 'ARHGEF2']
-
-	
-
-		#7 so far TO CONTINUE
+	# ALL GENES UPSTREAM OF ACKR1 + ACKR1 + 4 GENES DOWNSTREAM
 	# genes = ['ATP8B2', 'IL6R', 'UBE2Q1', 'ADAR', 'KCNN3', 
-	# 	'PMVK', 'PBXIP1', 'PYGO2'] # STUFF LEFT TO ADD
-
-	run(genes)
+	# 	 'PMVK', 'PBXIP1', 'PYGO2', 'SHC1', 'CKS1B', 
+	# 	 'FLAD1', 'LENEP', 'ZBTB7B', 'DCST1', 'ADAM15', 
+	# 	 'EFNA4', 'EFNA3', 'EFNA1', 'SLC50A1', 'DPM3', 
+	# 	 'KRTCAP2', 'TRIM46', 'MUC1', 'THBS3', 'GBA', 
+	# 	 'FAM189B', 'SCAMP3', 'CLK2', 'HCN3', 'FDPS', 
+	# 	 'RUSC1', 'ASH1L', 'MSTO1', 'DAP3', 'GON4L', 
+	# 	 'SYT11', 'RIT1', 'KHDC4', 'RXFP4', 'ARHGEF2', 
+	# 	 'SSR2', 'UBQLN4', 'LAMTOR2', 'RAB25', 'MEX3A', 
+	# 	 'LMNA', 'SEMA4A', 'SLC25A44', 'PMF1-BGLAP', 'GLMP', 
+	# 	 'VHLL', 'CCT3', 'RHBG', 'MEF2D', 'IQGAP3', 'TTC24', 
+	# 	 'NAXE', 'HAPLN2', 'BCAN', 'NES', 'CRABP2', 
+	# 	 'METTL25B', 'MRPL24', 'HDGF', 'PRCC', 'NTRK1', 
+	# 	 'PEAR1', 'ARHGEF11', 'ETV3L', 'ETV3', 'FCRL5', 
+	# 	 'FCRL4', 'FCRL3', 'FCRL2', 'FCRL1', 'CD5L', 
+	# 	 'KIRREL1', 'CD1D', 'CD1A', 'CD1B', 'CD1E', 
+	# 	 'OR10T2', 'OR10K2', 'OR10K1', 'OR10R2', 'OR6Y1', 
+	# 	 'OR6P1', 'OR10X1', 'SPTA1', 'OR6K2', 'OR6K3', 
+	# 	 'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 
+	# 	 'CADM3', 'ACKR1', 'FCER1A', 'OR10J1', 'OR10J5', 'APCS', 'CRP']
 	
+	# NEW RESULTS WITHOUT SQ ROOT
+	# genes = ['ATP8B2', 'IL6R', 'UBE2Q1', 'ADAR', 'KCNN3', 
+	# 	 'PMVK', 'PBXIP1', 'PYGO2', 'SHC1', 'CKS1B', 
+	# 	 'FLAD1', 'LENEP', 'ZBTB7B', 'DCST1', 'ADAM15', 
+	# 	 'EFNA4', 'EFNA3', 'EFNA1', 'SLC50A1', 'DPM3', 
+	# 	 'KRTCAP2', 'TRIM46', 'MUC1', 'THBS3', 'GBA', 
+	# 	 'FAM189B', 'SCAMP3', 'CLK2', 'HCN3', 'FDPS', 
+	# 	 'RUSC1', 'ASH1L', 'MSTO1', 'DAP3', 'GON4L', 
+	# 	 'SYT11', 'RIT1', 'KHDC4', 'RXFP4', 'ARHGEF2']
+	# genes = ['SSR2', 'UBQLN4', 'LAMTOR2', 'RAB25', 'MEX3A', 
+	# 	 'LMNA', 'SEMA4A', 'SLC25A44', 'PMF1-BGLAP', 'GLMP', 
+	# 	 'VHLL', 'CCT3', 'RHBG', 'MEF2D', 'IQGAP3', 'TTC24', 
+	# 	 'NAXE', 'HAPLN2', 'BCAN', 'NES', 'CRABP2', 
+	# 	 'METTL25B', 'MRPL24', 'HDGF', 'PRCC', 'NTRK1', 
+	# 	 'PEAR1', 'ARHGEF11', 'ETV3L', 'ETV3', 'FCRL5', 
+	# 	 'FCRL4', 'FCRL3', 'FCRL2', 'FCRL1', 'CD5L', 
+	# 	 'KIRREL1', 'CD1D', 'CD1A', 'CD1B', 'CD1E', 
+	# 	 'OR10T2', 'OR10K2', 'OR10K1', 'OR10R2', 'OR6Y1', 
+	# 	 'OR6P1', 'OR10X1', 'SPTA1', 'OR6K2', 'OR6K3', 
+	# 	 'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 
+	# 	 'CADM3', 'ACKR1', 'FCER1A']
+	# genes = ['OR10J1', 'OR10J5', 'APCS', 'CRP']
+	# run(genes, 'downstream')
+	# genes = ['ATP8B2', 'IL6R', 'UBE2Q1', 'ADAR', 'KCNN3']
+	# genes = ['PMVK', 'PBXIP1', 'PYGO2', 'SHC1', 'CKS1B', 
+	# 	 'FLAD1', 'LENEP', 'ZBTB7B', 'DCST1', 'ADAM15', 
+	# 	 'EFNA4', 'EFNA3', 'EFNA1', 'SLC50A1', 'DPM3', 
+	# 	 'KRTCAP2', 'TRIM46', 'MUC1', 'THBS3', 'GBA', 
+	# 	 'FAM189B', 'SCAMP3', 'CLK2', 'HCN3', 'FDPS', 
+	# 	 'RUSC1', 'ASH1L', 'MSTO1', 'DAP3', 'GON4L', 
+	# 	 'SYT11', 'RIT1', 'KHDC4', 'RXFP4', 'ARHGEF2']
+	# genes =	 ['SSR2', 'UBQLN4', 'LAMTOR2', 'RAB25', 'MEX3A', 
+	# 	 'LMNA', 'SEMA4A', 'SLC25A44', 'PMF1-BGLAP', 'GLMP', 
+	# 	 'VHLL', 'CCT3', 'RHBG', 'MEF2D', 'IQGAP3', 'TTC24', 
+	# 	 'NAXE', 'HAPLN2', 'BCAN', 'NES', 'CRABP2', 
+	# 	 'METTL25B', 'MRPL24', 'HDGF', 'PRCC', 'NTRK1', 
+	# 	 'PEAR1', 'ARHGEF11', 'ETV3L', 'ETV3', 'FCRL5', 
+	# 	 'FCRL4', 'FCRL3', 'FCRL2', 'FCRL1', 'CD5L', 
+	# 	 'KIRREL1']
+	# genes = ['CD1D', 'CD1A', 'CD1B', 'CD1E', 
+	# 	 'OR10T2', 'OR10K2', 'OR10K1', 'OR10R2', 'OR6Y1', 
+	# 	 'OR6P1', 'OR10X1', 'SPTA1', 'OR6K2', 'OR6K3', 
+	# 	 'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 
+	# 	 'CADM3', 'ACKR1', 'FCER1A']
+	# genes = ['OR10J1', 'OR10J5', 'APCS', 'CRP']
+	# run(genes, 'upstream')
+
+	# WITH SQUARE ROOT 
+	# genes = ['ATP8B2', 'IL6R', 'UBE2Q1', 'ADAR', 'KCNN3', 
+	# 	 'PMVK', 'PBXIP1', 'PYGO2', 'SHC1', 'CKS1B', 
+	# 	 'FLAD1', 'LENEP', 'ZBTB7B', 'DCST1', 'ADAM15', 
+	# 	 'EFNA4', 'EFNA3', 'EFNA1', 'SLC50A1', 'DPM3', 
+	# 	 'KRTCAP2', 'TRIM46', 'MUC1', 'THBS3', 'GBA', 
+	# 	 'FAM189B', 'SCAMP3', 'CLK2', 'HCN3', 'FDPS', 
+	# 	 'RUSC1', 'ASH1L', 'MSTO1', 'DAP3', 'GON4L', 
+	# 	 'SYT11', 'RIT1', 'KHDC4', 'RXFP4', 'ARHGEF2']
+	# genes = ['SSR2', 'UBQLN4', 'LAMTOR2', 'RAB25', 'MEX3A', 
+	# 	 'LMNA', 'SEMA4A', 'SLC25A44', 'PMF1-BGLAP', 'GLMP', 
+	# 	 'VHLL', 'CCT3', 'RHBG', 'MEF2D', 'IQGAP3', 'TTC24', 
+	# 	 'NAXE', 'HAPLN2', 'BCAN', 'NES', 'CRABP2', 
+	# 	 'METTL25B', 'MRPL24', 'HDGF', 'PRCC', 'NTRK1', 
+	# 	 'PEAR1', 'ARHGEF11', 'ETV3L', 'ETV3', 'FCRL5', 
+	# 	 'FCRL4', 'FCRL3', 'FCRL2', 'FCRL1', 'CD5L', 
+	# 	 'KIRREL1', 'CD1D', 'CD1A', 'CD1B', 'CD1E', 
+	# 	 'OR10T2', 'OR10K2', 'OR10K1', 'OR10R2', 'OR6Y1', 
+	# 	 'OR6P1', 'OR10X1', 'SPTA1', 'OR6K2', 'OR6K3', 
+	# 	 'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 
+	# 	 'CADM3', 'ACKR1', 'FCER1A']
+	# genes = ['OR10J1', 'OR10J5', 'APCS', 'CRP']
+	# run(genes, 'downstream')
+	# genes = ['ATP8B2', 'IL6R', 'UBE2Q1', 'ADAR', 'KCNN3', 
+	# 	 'PMVK', 'PBXIP1', 'PYGO2', 'SHC1', 'CKS1B', 
+	# 	 'FLAD1', 'LENEP', 'ZBTB7B', 'DCST1', 'ADAM15', 
+	# 	 'EFNA4', 'EFNA3', 'EFNA1', 'SLC50A1', 'DPM3', 
+	# 	 'KRTCAP2', 'TRIM46', 'MUC1', 'THBS3', 'GBA', 
+	# 	 'FAM189B', 'SCAMP3', 'CLK2', 'HCN3', 'FDPS', 
+	# 	 'RUSC1', 'ASH1L', 'MSTO1', 'DAP3', 'GON4L', 
+	# 	 'SYT11', 'RIT1', 'KHDC4', 'RXFP4', 'ARHGEF2']
+	# genes=['SSR2', 'UBQLN4', 'LAMTOR2', 'RAB25', 'MEX3A', 
+	# 	 'LMNA', 'SEMA4A', 'SLC25A44', 'PMF1-BGLAP', 'GLMP', 
+	# 	 'VHLL', 'CCT3', 'RHBG', 'MEF2D', 'IQGAP3', 'TTC24', 
+	# 	 'NAXE', 'HAPLN2', 'BCAN', 'NES', 'CRABP2', 
+	# 	 'METTL25B', 'MRPL24', 'HDGF', 'PRCC', 'NTRK1', 
+	# 	 'PEAR1', 'ARHGEF11', 'ETV3L', 'ETV3', 'FCRL5', 
+	# 	 'FCRL4', 'FCRL3', 'FCRL2', 'FCRL1', 'CD5L', 
+	# 	 'KIRREL1']
+	# genes = ['CD1D', 'CD1A', 'CD1B', 'CD1E', 
+	# 	 'OR10T2', 'OR10K2', 'OR10K1', 'OR10R2', 'OR6Y1', 
+	# 	 'OR6P1', 'OR10X1', 'SPTA1', 'OR6K2', 'OR6K3', 
+	# 	 'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 
+	# 	 'CADM3', 'ACKR1', 'FCER1A']
+	# genes = ['OR10J1', 'OR10J5', 'APCS', 'CRP']
+	# run(genes, 'upstream')
+
+	# SQUARE ROOT + ADDED THRESHOLD REMOVER IF EQUAL
+	# genes = ['ATP8B2', 'IL6R', 'UBE2Q1', 'ADAR', 'KCNN3', 
+	# 	 'PMVK', 'PBXIP1', 'PYGO2', 'SHC1', 'CKS1B', 
+	# 	 'FLAD1', 'LENEP', 'ZBTB7B', 'DCST1', 'ADAM15', 
+	# 	 'EFNA4', 'EFNA3', 'EFNA1', 'SLC50A1', 'DPM3', 
+	# 	 'KRTCAP2', 'TRIM46', 'MUC1', 'THBS3', 'GBA', 
+	# 	 'FAM189B', 'SCAMP3', 'CLK2', 'HCN3', 'FDPS', 
+	# 	 'RUSC1', 'ASH1L', 'MSTO1', 'DAP3', 'GON4L', 
+	# 	 'SYT11', 'RIT1', 'KHDC4', 'RXFP4', 'ARHGEF2']
+	# genes = ['SSR2', 'UBQLN4', 'LAMTOR2', 'RAB25', 'MEX3A', 
+	# 	 'LMNA', 'SEMA4A', 'SLC25A44', 'PMF1-BGLAP', 'GLMP', 
+	# 	 'VHLL', 'CCT3', 'RHBG', 'MEF2D', 'IQGAP3', 'TTC24', 
+	# 	 'NAXE', 'HAPLN2', 'BCAN', 'NES', 'CRABP2', 
+	# 	 'METTL25B', 'MRPL24', 'HDGF', 'PRCC', 'NTRK1', 
+	# 	 'PEAR1', 'ARHGEF11', 'ETV3L', 'ETV3', 'FCRL5', 
+	# 	 'FCRL4', 'FCRL3', 'FCRL2', 'FCRL1', 'CD5L', 
+	# 	 'KIRREL1', 'CD1D', 'CD1A', 'CD1B', 'CD1E', 
+	# 	 'OR10T2', 'OR10K2', 'OR10K1', 'OR10R2', 'OR6Y1', 
+	# 	 'OR6P1', 'OR10X1', 'SPTA1', 'OR6K2', 'OR6K3', 
+	# 	 'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 
+	# 	 'CADM3', 'ACKR1', 'FCER1A']
+	# genes = ['OR10J1', 'OR10J5', 'APCS', 'CRP']
+	# run(genes, 'downstream')
+
+	# genes = ['ATP8B2', 'IL6R', 'UBE2Q1', 'ADAR', 'KCNN3', 
+	# 	 'PMVK', 'PBXIP1', 'PYGO2', 'SHC1', 'CKS1B', 
+	# 	 'FLAD1', 'LENEP', 'ZBTB7B', 'DCST1', 'ADAM15', 
+	# 	 'EFNA4', 'EFNA3', 'EFNA1', 'SLC50A1', 'DPM3', 
+	# 	 'KRTCAP2', 'TRIM46', 'MUC1', 'THBS3', 'GBA', 
+	# 	 'FAM189B', 'SCAMP3', 'CLK2', 'HCN3', 'FDPS', 
+	# 	 'RUSC1', 'ASH1L', 'MSTO1', 'DAP3', 'GON4L', 
+	# 	 'SYT11', 'RIT1', 'KHDC4', 'RXFP4', 'ARHGEF2'] 
+	# genes = ['SSR2', 'UBQLN4', 'LAMTOR2', 'RAB25', 'MEX3A', 
+	# 	 'LMNA', 'SEMA4A', 'SLC25A44', 'PMF1-BGLAP', 'GLMP', 
+	# 	 'VHLL', 'CCT3', 'RHBG', 'MEF2D', 'IQGAP3', 'TTC24', 
+	# 	 'NAXE', 'HAPLN2', 'BCAN', 'NES', 'CRABP2', 
+	# 	 'METTL25B', 'MRPL24', 'HDGF', 'PRCC', 'NTRK1', 
+	# 	 'PEAR1', 'ARHGEF11', 'ETV3L', 'ETV3', 'FCRL5', 
+	# 	 'FCRL4', 'FCRL3', 'FCRL2', 'FCRL1', 'CD5L', 
+	# 	 'KIRREL1']
+	# genes = ['CD1D', 'CD1A', 'CD1B', 'CD1E', 
+	# 	 'OR10T2', 'OR10K2', 'OR10K1', 'OR10R2', 'OR6Y1', 
+	# 	 'OR6P1', 'OR10X1', 'SPTA1', 'OR6K2', 'OR6K3', 
+	# 	 'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 
+	# 	 'CADM3', 'ACKR1', 'FCER1A']
+	# genes = ['OR10J1', 'OR10J5', 'APCS', 'CRP']
+	# run(genes, 'upstream')
 
 if __name__ == '__main__':
 	main()

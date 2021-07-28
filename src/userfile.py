@@ -82,7 +82,7 @@ def outputFile(filename):
 	df = pd.read_csv(filename, sep="\t")
 
 	getMeta(df, metaFile)
-	getSequence(df, seqFile)
+	# getSequence(df, seqFile)
 
 def main():
 	print('*****STARTING OUTPUT FORMATTING*****')

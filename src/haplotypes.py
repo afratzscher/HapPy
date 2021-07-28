@@ -133,26 +133,33 @@ def getUnambiguous(df):
 	before = d.drop(d[d['POS'] > config.__GENESTART__].index) # SNPs before gene
 	after = d.drop(d[d['POS'] < config.__GENEEND__].index) # SNPs after gene
 	after = after.reset_index(drop=True)
-	# for some genes, DONT have SNP between end of prev gene and start of gene (e.g. PYDC5)
-	if before.empty: # for if run region instead of genes
-		start = None
-		end = None
-		endsecond = None
-		print('start empty')
-	else:
+
+	try:
 		start = before.notna()[::-1].idxmax()
+	except: # no SNPs before gene, then have NONE flag
+		start = None
+	try:
 		end = after.notna().idxmax()
+	except: # if no SNP after gene, then have NONE flag
+		end = None
+	if end is not None:
 		endsecond = after.notna().cumsum().eq(2).idxmax() #index of second SNP after gene
+	else:
+		endsecond = None
 	within = gene.notna().sum(axis = 0) # number of hetero SNP in gene (0 or 1)
 
 	for i in df.columns:
 		if i in ['POS', 'ID' 'REF', 'ALT']:
-			start[i] = "-"
-			end[i] = "-"
+			if start is not None:
+				start[i] = "-"
+			if end is not None:
+				end[i] = "-"
 		else:
 			if within[i] == 1: # if 1 hetero SNP in gene (dont add another hetero)
 				# get start site
-				if(pd.isna(before.iloc[start[i]][i])): # if no SNP before, set to start 
+				if start is None: # if no SNP before gene, set to end of range
+					df.iloc[-2][i] = config.__START__
+				elif(pd.isna(before.iloc[start[i]][i])): # if no SNP before, set to start 
 					df.iloc[-2][i] = config.__START__
 				else:
 					if (start[i]+1 < len(before)):
@@ -160,13 +167,17 @@ def getUnambiguous(df):
 					else:
 						df.iloc[-2][i] = config.__START__
 				# get end site
-				if(pd.isna(after.iloc[end[i]][i])):
+				if end is None: # if no SNP after, set to end of range
+					df.iloc[-1][i] = config.__END__
+				elif(pd.isna(after.iloc[end[i]][i])):
 					df.iloc[-1][i] = config.__END__
 				else:
 					df.iloc[-1][i] = (after.iloc[end[i]]['POS']) - 1 
 			else:
 				# get start site
-				if(pd.isna(before.iloc[start[i]][i])): # if no SNP before, set to start 
+				if start is None: # if no SNP before gene, set to end of range
+					df.iloc[-2][i] = config.__START__
+				elif(pd.isna(before.iloc[start[i]][i])): # if no SNP before, set to start 
 					df.iloc[-2][i] = config.__START__
 				else:
 					if (start[i]+1 < len(before)):
@@ -174,7 +185,9 @@ def getUnambiguous(df):
 					else:
 						df.iloc[-2][i] = config.__START__
 				# get end site -> includes 1 hetero SNP
-				if(pd.isna(after.iloc[endsecond[i]][i])):
+				if end is None: # if no SNP after, set to end of range
+					df.iloc[-1][i] = config.__END__
+				elif(pd.isna(after.iloc[endsecond[i]][i])):
 					df.iloc[-1][i] = config.__END__
 				else:
 					df.iloc[-1][i] = (after.iloc[endsecond[i]]['POS']) - 1 
