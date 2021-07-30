@@ -188,7 +188,7 @@ def main():
 	global threshold
 	direct = '/'.join(os.getcwd().split('/')[:-1]) + "/results/"
 	offset = 10000 # to distinguish 2 df
-	threshold = 10000 # 1 million takes too long, 500000 and 100,000 take too long as well
+	threshold = 100000 # 1 million takes too long, 500000 and 100,000 take too long as well
 
 	# ALL GENES UPSTREAM OF ACKR1 + ACKR1 + 4 GENES DOWNSTREAM
 	# genes = ['ATP8B2', 'IL6R', 'UBE2Q1', 'ADAR', 'KCNN3', 
@@ -339,6 +339,105 @@ def main():
 	# 	 'RUSC1', 'ASH1L', 'MSTO1', 'DAP3', 'GON4L', 
 	# 	 'SYT11', 'RIT1', 'KHDC4', 'RXFP4', 'ARHGEF2'] 
 	# genes = ['SSR2', 'UBQLN4', 'LAMTOR2', 'RAB25', 'MEX3A', 
+	# 	 'LMNA', 'SEMA4A', 'SLC25A44', 'PMF1-BGLAP', 'GLMP', 
+	# 	 'VHLL', 'CCT3', 'RHBG', 'MEF2D', 'IQGAP3', 'TTC24', 
+	# 	 'NAXE', 'HAPLN2', 'BCAN', 'NES', 'CRABP2', 
+	# 	 'METTL25B', 'MRPL24', 'HDGF', 'PRCC', 'NTRK1', 
+	# 	 'PEAR1', 'ARHGEF11', 'ETV3L', 'ETV3', 'FCRL5', 
+	# 	 'FCRL4', 'FCRL3', 'FCRL2', 'FCRL1', 'CD5L', 
+	# 	 'KIRREL1']
+	# genes = ['CD1D', 'CD1A', 'CD1B', 'CD1E', 
+	# 	 'OR10T2', 'OR10K2', 'OR10K1', 'OR10R2', 'OR6Y1', 
+	# 	 'OR6P1', 'OR10X1', 'SPTA1', 'OR6K2', 'OR6K3', 
+	# 	 'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 
+	# 	 'CADM3', 'ACKR1', 'FCER1A']
+	# genes = ['OR10J1', 'OR10J5', 'APCS', 'CRP']
+	# run(genes, 'upstream')
+
+	# NO SQ ROOT, THRESOLD = 100,000
+	# genes = ['ATP8B2', 'IL6R', 'UBE2Q1', 'ADAR', 'KCNN3', 
+	# 	 'PMVK', 'PBXIP1', 'PYGO2', 'SHC1', 'CKS1B', 
+	# 	 'FLAD1', 'LENEP', 'ZBTB7B', 'DCST1', 'ADAM15', 
+	# 	 'EFNA4', 'EFNA3', 'EFNA1', 'SLC50A1', 'DPM3', 
+	# 	 'KRTCAP2', 'TRIM46', 'MUC1', 'THBS3', 'GBA', 
+	# 	 'FAM189B', 'SCAMP3', 'CLK2', 'HCN3', 'FDPS', 
+	# 	 'RUSC1', 'ASH1L', 'MSTO1', 'DAP3', 'GON4L', 
+	# 	 'SYT11', 'RIT1', 'KHDC4', 'RXFP4', 'ARHGEF2']
+	# genes = ['SSR2', 'UBQLN4', 'LAMTOR2', 'RAB25', 'MEX3A', 
+	# 	 'LMNA', 'SEMA4A', 'SLC25A44', 'PMF1-BGLAP', 'GLMP', 
+	# 	 'VHLL', 'CCT3', 'RHBG', 'MEF2D', 'IQGAP3', 'TTC24', 
+	# 	 'NAXE', 'HAPLN2', 'BCAN', 'NES', 'CRABP2', 
+	# 	 'METTL25B', 'MRPL24', 'HDGF', 'PRCC', 'NTRK1', 
+	# 	 'PEAR1', 'ARHGEF11', 'ETV3L', 'ETV3', 'FCRL5', 
+	# 	 'FCRL4', 'FCRL3', 'FCRL2', 'FCRL1', 'CD5L', 
+	# 	 'KIRREL1', 'CD1D', 'CD1A', 'CD1B', 'CD1E', 
+	# 	 'OR10T2', 'OR10K2', 'OR10K1', 'OR10R2', 'OR6Y1', 
+	# 	 'OR6P1', 'OR10X1', 'SPTA1', 'OR6K2', 'OR6K3', 
+	# 	 'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 
+	# 	 'CADM3', 'ACKR1', 'FCER1A']
+	# genes = [ 'OR10J1', 'OR10J5', 'APCS', 'CRP']
+	# run(genes, 'downstream')
+
+	# genes = ['ATP8B2', 'IL6R', 'UBE2Q1', 'ADAR', 'KCNN3']
+	# genes = ['PMVK', 'PBXIP1', 'PYGO2', 'SHC1', 'CKS1B', 
+	# 	 'FLAD1', 'LENEP', 'ZBTB7B', 'DCST1', 'ADAM15', 
+	# 	 'EFNA4', 'EFNA3', 'EFNA1', 'SLC50A1', 'DPM3', 
+	# 	 'KRTCAP2', 'TRIM46', 'MUC1', 'THBS3', 'GBA', 
+	# 	 'FAM189B', 'SCAMP3', 'CLK2', 'HCN3', 'FDPS', 
+	# 	 'RUSC1', 'ASH1L', 'MSTO1', 'DAP3', 'GON4L', 
+	# 	 'SYT11', 'RIT1', 'KHDC4', 'RXFP4', 'ARHGEF2']
+	# genes = =[
+	# 	 'SSR2', 'UBQLN4', 'LAMTOR2', 'RAB25', 'MEX3A', 
+	# 	 'LMNA', 'SEMA4A', 'SLC25A44', 'PMF1-BGLAP', 'GLMP', 
+	# 	 'VHLL', 'CCT3', 'RHBG', 'MEF2D', 'IQGAP3', 'TTC24', 
+	# 	 'NAXE', 'HAPLN2', 'BCAN', 'NES', 'CRABP2', 
+	# 	 'METTL25B', 'MRPL24', 'HDGF', 'PRCC', 'NTRK1', 
+	# 	 'PEAR1', 'ARHGEF11', 'ETV3L', 'ETV3', 'FCRL5', 
+	# 	 'FCRL4', 'FCRL3', 'FCRL2', 'FCRL1', 'CD5L', 
+	# 	 'KIRREL1']
+	# genes = ['CD1D', 'CD1A', 'CD1B', 'CD1E', 
+	# 	 'OR10T2', 'OR10K2', 'OR10K1', 'OR10R2', 'OR6Y1', 
+	# 	 'OR6P1', 'OR10X1', 'SPTA1', 'OR6K2', 'OR6K3', 
+	# 	 'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 
+	# 	 'CADM3', 'ACKR1', 'FCER1A']
+	# genes = ['OR10J1', 'OR10J5', 'APCS', 'CRP']
+	# run(genes, 'upstream')
+
+	# SQ ROOT, THRESOLD = 100,000 
+	genes = ['ATP8B2', 'IL6R', 'UBE2Q1', 'ADAR', 'KCNN3', 
+		 'PMVK', 'PBXIP1', 'PYGO2', 'SHC1', 'CKS1B', 
+		 'FLAD1', 'LENEP', 'ZBTB7B', 'DCST1', 'ADAM15', 
+		 'EFNA4', 'EFNA3', 'EFNA1', 'SLC50A1', 'DPM3', 
+		 'KRTCAP2', 'TRIM46', 'MUC1', 'THBS3', 'GBA', 
+		 'FAM189B', 'SCAMP3', 'CLK2', 'HCN3', 'FDPS', 
+		 'RUSC1', 'ASH1L', 'MSTO1', 'DAP3', 'GON4L', 
+		 'SYT11', 'RIT1', 'KHDC4', 'RXFP4', 'ARHGEF2', 'SSR2']
+		 	# stops at SSR2 (so ATP8B2 - ARHGEF2), time = 1729.5 seconds
+	# genes = ['SSR2', 'UBQLN4', 'LAMTOR2', 'RAB25', 'MEX3A', 
+	# 	 'LMNA', 'SEMA4A', 'SLC25A44', 'PMF1-BGLAP', 'GLMP', 
+	# 	 'VHLL', 'CCT3', 'RHBG', 'MEF2D', 'IQGAP3', 'TTC24', 
+	# 	 'NAXE', 'HAPLN2', 'BCAN', 'NES', 'CRABP2', 
+	# 	 'METTL25B', 'MRPL24', 'HDGF', 'PRCC', 'NTRK1', 
+	# 	 'PEAR1', 'ARHGEF11', 'ETV3L', 'ETV3', 'FCRL5', 
+	# 	 'FCRL4', 'FCRL3', 'FCRL2', 'FCRL1', 'CD5L', 
+	# 	 'KIRREL1', 'CD1D', 'CD1A', 'CD1B', 'CD1E', 
+	# 	 'OR10T2', 'OR10K2', 'OR10K1', 'OR10R2', 'OR6Y1', 
+	# 	 'OR6P1', 'OR10X1', 'SPTA1', 'OR6K2', 'OR6K3', 
+	# 	 'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 
+	# 	 'CADM3', 'ACKR1', 'FCER1A']
+	# genes = [ 'OR10J1', 'OR10J5', 'APCS', 'CRP']
+	run(genes, 'downstream')
+
+	# genes = ['ATP8B2', 'IL6R', 'UBE2Q1', 'ADAR', 'KCNN3']
+	# genes = ['PMVK', 'PBXIP1', 'PYGO2', 'SHC1', 'CKS1B', 
+	# 	 'FLAD1', 'LENEP', 'ZBTB7B', 'DCST1', 'ADAM15', 
+	# 	 'EFNA4', 'EFNA3', 'EFNA1', 'SLC50A1', 'DPM3', 
+	# 	 'KRTCAP2', 'TRIM46', 'MUC1', 'THBS3', 'GBA', 
+	# 	 'FAM189B', 'SCAMP3', 'CLK2', 'HCN3', 'FDPS', 
+	# 	 'RUSC1', 'ASH1L', 'MSTO1', 'DAP3', 'GON4L', 
+	# 	 'SYT11', 'RIT1', 'KHDC4', 'RXFP4', 'ARHGEF2']
+	# genes = =[
+	# 	 'SSR2', 'UBQLN4', 'LAMTOR2', 'RAB25', 'MEX3A', 
 	# 	 'LMNA', 'SEMA4A', 'SLC25A44', 'PMF1-BGLAP', 'GLMP', 
 	# 	 'VHLL', 'CCT3', 'RHBG', 'MEF2D', 'IQGAP3', 'TTC24', 
 	# 	 'NAXE', 'HAPLN2', 'BCAN', 'NES', 'CRABP2', 

@@ -10,6 +10,7 @@ def fetchDF(gene):
 	file = direct + gene + "/full_length_haplotypes_" + gene + ".vcf"
 	try:
 		df = pd.read_csv(file, sep="\t")
+		print(df)
 		if len(df) < 4:
 			short.append(gene) 
 	except:
@@ -30,7 +31,7 @@ def main():
 	direct = '/'.join(os.getcwd().split('/')[:-1]) + "/results/"
 
 	# ALL GENES UPSTREAM OF ACKR1 + ACKR1 + 4 GENES DOWNSTREAM
-	genes = ['H3-2', 'FAM72C','PPIAL4E', 'NBPF15', 'PPIAL4F', 
+	genes = ['FAM72C','PPIAL4E', 'NBPF15', 'PPIAL4F', 
 		'SRGAP2B', 'LOC101929805', 'PPIAL4D', 'NBPF20', 
 		'GPR89A', 'ANKRD35', 'ITGA10', 'PEX11B', 'RBM8A', 
 		'LIX1L', 'POLR3GL', 'TXNIP', 'HJV', 'NBPF10', 
@@ -86,6 +87,7 @@ def main():
 		 'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 
 		 'CADM3', 'ACKR1', 'FCER1A', 'OR10J1', 'OR10J5', 'APCS', 'CRP']
 
+	genes = ['PPIAL4F']
 	run(genes)
 if __name__ == '__main__':
 	main()

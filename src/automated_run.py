@@ -45,7 +45,9 @@ def main():
 
 	# TO DO: FIX AQP10, H4C15, H3C15, H2AC19, 
 	#ADDED ALL GENES UPSTREM OF ACKR1 ON LONG ARM
-	names = ['H3-2']
+
+	# TO CHECK: H3C15, CTXND2, TUFT1
+	names = ['PDE4DIP', 'H3C14', 'H2AC18', 'H2AC19', 'H3C15', 'H4C15', 'TARS2', 'ENSA', 'CTXND2', 'MINDY1', 'PRUNE1', 'SEMA6C', 'RFX5', 'TUFT1', 'LCE3C', 'LCE3B', 'AQP10']
 	cmd = makeCommands(names)
 	run_commands(*cmd)
 
