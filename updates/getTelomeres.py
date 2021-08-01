@@ -112,8 +112,13 @@ def getFASTA(chrom):
 			cleaned.append(tmp_start+"-"+last)
 			flag = False
 			continue
+		elif first == last:
+			continue
 		else:
 			cleaned.append(first+"-"+last)
+	print(cleaned)
+	print(len(cleaned))
+	exit()
 
 	# get length of elements -> use to get centromere -> centromere = longest element
 	length = []
@@ -127,7 +132,8 @@ def getFASTA(chrom):
 	# centromere in cleaned[idx]
 	# second telomere in cleaned[-1] (last in list)
 
-	file = open("GRCH38_chr_sites.txt", 'a')
+	# file = open("GRCH38_chr_sites.txt", 'a')
+	file = open("test.txt", 'a')
 	short = str(int(cleaned[0].split("-")[1])+1) + "-" + str(int(cleaned[idx].split("-")[0])-1) + "\t"
 	long_val = str(int(cleaned[idx].split("-")[1])+1) + "-" + str(int(cleaned[-1].split("-")[0])-1) + "\t"
 	telomere1 = cleaned[0] + "\t"
@@ -146,6 +152,7 @@ def main():
 		chrom = row['version']
 		print(chrom)
 		seq = getFASTA(chrom)
+		break
 	print('*****DONE WITH TELOMERE/CENTROMERE CALCULATION*****')
 
 if __name__ == '__main__':

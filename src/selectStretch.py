@@ -32,8 +32,9 @@ def select(before, after):
 	return lst[::-1]
 
 def main():
-	before = 272 # number genes before ACKR1
-	after = 5 # number genes after ACKR1 -> TO CHANGE
+# 272 before ACKR1 on long arm
+	before = 100 # number genes before ACKR1
+	after = 100 # number genes after ACKR1 -> TO CHANGE
 
 	lst = select(before, after)
 	print(lst)
