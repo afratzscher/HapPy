@@ -19,7 +19,7 @@ def getMeta(df, metaFile):
 	meta = df.iloc[3:, idx:]
 	haploID = df['haplotypeID']
 	meta.insert(0, 'haplotypeID', haploID)
-	meta.to_csv(metaFile, sep="\t", mode='a', index = False)
+	meta.to_csv(metaFile, sep="\t", mode='w', index = False)
 
 def getSequence(df, seqFile):
 	idx = df.columns.get_loc(config.__POPS__[0])
@@ -64,7 +64,7 @@ def getSequence(df, seqFile):
 			ref = df.loc[1][i]
 			df[i] = df[i].replace('-', ref, regex=True) # replace - with nucleotide
 
-	df.to_csv(seqFile, sep="\t", mode='a', index = False)
+	df.to_csv(seqFile, sep="\t", mode='w', index = False)
 
 def outputFile(filename):
 	seqFile = config.__FILEPATH__ + "/sequence_" + config.__FILENAME__

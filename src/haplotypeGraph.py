@@ -37,9 +37,9 @@ def main():
 	# adding area of gene
 	fig, ax = plt.subplots()
 	ax.axvspan((config.__GENESTART__ - min(df['start']))/1000, 
-		(config.__GENEEND__ - min(df['start']))/1000, alpha=0.2, color='blue')
+		(config.__GENEEND__ - min(df['start']))/1000, alpha=0.2, color='#FF9933')
 	
-	plt.hlines(y=num_full, xmin=full['left'], xmax=full['right'], color='red', linewidth=.2)
+	plt.hlines(y=num_full, xmin=full['left'], xmax=full['right'], color='#FF9933', linewidth=.2)
 	plt.hlines(y=num_rest, xmin=rest['left'], xmax=rest['right'], color='grey', linewidth=.2)
 	plt.title("Length of haplotypes (" + config.__GENENAME__ + ")") 
 	plt.xlabel('Length (nt x 10^3)')
@@ -60,7 +60,7 @@ def main():
 	visualizationFolder = (config.__FOLDERPATH__ + "/results/" 
 		+ config.__FOLDERNAME__ + "/visualization/")
 	graphname = config.__GENENAME__ + '_haplotypes_graph_vrs02.png'
-	plt.savefig(visualizationFolder + graphname, dpi=800)
+	plt.savefig(visualizationFolder + graphname, dpi=800, transparent=True)
 
 if __name__ == '__main__':
 	main()
