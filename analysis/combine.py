@@ -61,33 +61,106 @@ def toFile(genes, res):
 
 
 def run(genes, direction):
+	triplets = list(tuple(genes[i:i+3]) for i in range(len(genes)-1) if i%2==0)
+	
+	#in case DONT have multiple of 3, add last gene
+	last = None
+	if len(triplets[-1]) == 2:
+		last = list(triplets[-1])
+		triplets = triplets[:-1]
+
 	pairs = list(zip(genes, genes[1:]))
 
 	overlap = []
-	# get for first gene
-	for gene, nextgene in pairs:
-		print(gene, nextgene)
+	tmp = []
+	for gene, secondgene, thirdgene in triplets:
+		print(gene, secondgene, thirdgene)
 		if gene == genes[0]:
-			df, haploID, rank, position = fetchDF(gene)
+			firstDF, firstID, firstRANK, firstPOSITION = fetchDF(gene)
 		# get df for next gene
-		nextDF, nextID, nextRANK, nextPOSITION = fetchDF(nextgene)
+		secondDF, secondID, secondRANK, secondPOSITION = fetchDF(secondgene)
+		thirdDF, thirdID, thirdRANK, thirdPOSITION = fetchDF(thirdgene)
 
-		''' 
-		block of code below shows that, for a gene, there are NO duplciated full length haplotypes
-		this means that all duplicates in combined df have same conserved region for both genes
-		'''
-		# df = df[df.duplicated(keep=False)] # proves NO duplicated full-length haplotypes
-		# nextDF = nextDF[nextDF.duplicated(keep=False)]
+		# combine twice
+		for i in range(0,2):
+			if i == 0:
+				df = firstDF
+				nextDF = secondDF
+				rank = firstRANK
+				nextRANK = secondRANK
+				position = firstPOSITION
+				nextPOSITION = secondPOSITION
+			else:
+				df = secondDF
+				nextDF = thirdDF
+				rank = secondRANK
+				nextRANK = thirdRANK
+				position = secondPOSITION
+				nextPOSITION = thirdPOSITION
 
+			mutuals = [col for col in df.columns if col in nextDF.columns]
+		
+			# add 10000 to index (b/c number of full length haplos < 10000 ) -> can differentiate between haplos from df and nextDF
+			nextDF.index+=offset
+
+			# combines df for both genes with same SNPs
+			allSNPs = df[mutuals].append(nextDF[mutuals]) 
+				#NOTE: df[mutuals] CAN have duplicates (b/c different outside this range, but only looking at specific range)
+			
+			#case where no overlap
+			if not mutuals:
+				if position[-1] < nextPOSITION[0]:
+					print("NO MUTUALS BC NO SNPS BETWEEN, TRY ALL COMBINATIONS")
+					idx = [tuple(df.index.tolist() + nextDF.index.tolist())]
+					
+			else:
+				allSNPs = allSNPs[allSNPs.duplicated(keep=False)] # keeps only identical rows
+				idx = allSNPs.groupby(list(allSNPs)).apply(lambda x: tuple(x.index)).tolist() # gets indices of identical rows
+		
+			# get combinations (e.g. make [1,2,3] to [1,2], [2,3], [1,3])
+			lst = []
+			for i in idx:
+				val = list(itertools.combinations(i, 2))
+				lst.extend(val)
+
+			# only keep if overlapping match for DIFFERENT gene (NOT same gene)
+			idx = []
+			for i in lst:
+				length = len(i)
+				if (i[0] < offset) and (i[1] < offset): # both in gene
+					continue
+				elif (offset <= i[0]) and (offset <= i[1]): # both in next gene
+					continue
+				else:
+					if i[0] >= offset:
+						idx.append(((i[0]-offset, i[1]), (nextRANK[i[0]-offset], rank[i[1]]))) # do - so that get index in df for next gene
+					if i[1] >= offset:
+						idx.append(((i[0], i[1]-offset), (rank[i[0]], nextRANK[i[1]-offset]))) # do - so that get index in df for next gene
+			tmp.append(idx)
+
+			#remove offset
+			nextDF.index-=offset
+		
+		#combine duplets into triplets
+		overlap.append([((u[0][0], u[0][1], v[0][1]), (u[1][0], u[1][1],v[1][1])) for u in tmp[0] for v in tmp[1]
+				if u[0][1] == v[0][0]])
+	
+		# at end, go to next 
+		firstDF, firstID, firstRANK, firstPOSITION = thirdDF, thirdID, thirdRANK, thirdPOSITION
+
+	# run on single double (if not odd number of genes)
+	if last:
+		print(last[0], last[1])
+		df, haploID, rank, position = fetchDF(last[0])
+		nextDF, nextID, nextRANK, nextPOSITION = fetchDF(last[1])
 		mutuals = [col for col in df.columns if col in nextDF.columns]
 		
 		# add 10000 to index (b/c number of full length haplos < 10000 ) -> can differentiate between haplos from df and nextDF
 		nextDF.index+=offset
-
 		# combines df for both genes with same SNPs
 		allSNPs = df[mutuals].append(nextDF[mutuals]) 
 			#NOTE: df[mutuals] CAN have duplicates (b/c different outside this range, but only looking at specific range)
-		
+			
 		#case where no overlap
 		if not mutuals:
 			if position[-1] < nextPOSITION[0]:
@@ -97,7 +170,7 @@ def run(genes, direction):
 		else:
 			allSNPs = allSNPs[allSNPs.duplicated(keep=False)] # keeps only identical rows
 			idx = allSNPs.groupby(list(allSNPs)).apply(lambda x: tuple(x.index)).tolist() # gets indices of identical rows
-			
+		
 		# get combinations (e.g. make [1,2,3] to [1,2], [2,3], [1,3])
 		lst = []
 		for i in idx:
@@ -121,30 +194,36 @@ def run(genes, direction):
 
 		#remove offset
 		nextDF.index-=offset
-		# at end, set df to " nextgene"
-		df, rank, position = nextDF, nextRANK, nextPOSITION
 
 	if direction == 'downstream':
 		# FOR DOWNSTREAM GENE ADDED
 		res = []
 		for i in range(0, len(overlap)-1):
+			val = 2*i
 			temp = res
-			print(i,i+1, 'ADDING ', genes[i+2])
+			if (len(overlap[i+1][0][0])) == 3:
+				print(val,val+1,val+2, 'ADDING ', genes[val+3], genes[val+4])
+			else:
+				print(val,val+1, 'ADDING ', genes[val+3])
 			if i == 0:
 				res = overlap[0]
 				res.sort(key = lambda x: x[0][-1])
 				next_overlap = overlap[i+1]
 				next_overlap.sort(key = lambda x: x[0][0])
-				res = [[[u[0][0], u[0][1], v[0][1]], [u[1][0] + u[1][1] + v[1][1]]] for u in res for v in next_overlap
-					if u[0][1] == v[0][0]]
+				res = [[[u[0][0], u[0][1], v[0][0], v[0][1], v[0][2]], [u[1][0] + u[1][1] + u[1][2] + v[1][1] + v[1][2]]] for u in res for v in next_overlap
+					if u[0][-1] == v[0][0]]
 			else:
 				res.sort(key = lambda x: x[0][-1])
 				next_overlap = overlap[i+1]
 				next_overlap.sort(key = lambda x: x[0][0])
-				res = [[u[0] + [v[0][1]], [u[1][0]+v[1][1]]] for u in res for v in next_overlap
-					if u[0][-1] == v[0][0]]
+				if (len(overlap[i+1][0][0])) == 3:
+					res = [[u[0] + [v[0][1], v[0][2]], [u[1][0]+v[1][1]+v[1][2]]] for u in res for v in next_overlap
+						if u[0][-1] == v[0][0]]
+				else:
+					res = [[u[0] + [v[0][1]], [u[1][0]+v[1][1]]] for u in res for v in next_overlap
+						if u[0][-1] == v[0][0]]
 			if not res: # if res empty
-				print('empty when adding: ', genes[i+2])
+				print('empty when adding: ', genes[val+3])
 				res = temp
 				print(len(res), " LCSH")
 				break
@@ -161,7 +240,11 @@ def run(genes, direction):
 					# if none left, keep all
 				if len(tmp) == 0:
 					print('cannot reduce, otherwise none left, NOTHING DONE')
-				print('reduced from ', len(res), ' to ', len(tmp), ' for ', genes[i+2])
+
+				if (len(overlap[i+1][0][0])) == 3:
+					print('reduced from ', len(res), ' to ', len(tmp), ' for ', genes[val+3], genes[val+4])
+				else:
+					print('reduced from ', len(res), ' to ', len(tmp), ' for ', genes[val+3])
 				res = tmp
 			else:
 				print('length: ', len(res))
@@ -206,7 +289,10 @@ def run(genes, direction):
 					tmp = res[:threshold]
 				if len(tmp) == 0:
 					print('cannot reduce, otherwise none left')
-				print('reduced from ', len(res), ' to ', len(tmp), ' for ', genes[i-1])
+				if (len(overlap[i+1][0][0])) == 3:
+					print('reduced from ', len(res), ' to ', len(tmp), ' for ', genes[i-1], genes[i-2])
+				else:
+					print('reduced from ', len(res), ' to ', len(tmp), ' for ', genes[i-1])
 				res = tmp
 			else:
 				print('length: ', len(res))
@@ -224,18 +310,25 @@ def main():
 	offset = 10000 # to distinguish 2 df
 	threshold = 10000 # 1 million takes too long, 500000 and 100,000 take too long as well
 	
+	#TRIPLETS
+	#101 genes
+	genes  = ['SLC25A44', 'PMF1-BGLAP', 'GLMP', 'VHLL', 'CCT3', 'RHBG', 'MEF2D', 'IQGAP3', 'TTC24', 'NAXE', 'HAPLN2', 'BCAN', 'NES', 'CRABP2', 'METTL25B', 'MRPL24', 'HDGF', 'PRCC', 'NTRK1', 'PEAR1', 'ARHGEF11', 'ETV3L', 'ETV3', 'FCRL5', 'FCRL4', 'FCRL3', 'FCRL2', 'FCRL1', 'CD5L', 'KIRREL1', 'CD1D', 'CD1A', 'CD1B', 'CD1E', 'OR10T2', 'OR10K2', 'OR10K1', 'OR10R2', 'OR6Y1', 'OR6P1', 'OR10X1', 'SPTA1', 'OR6K2', 'OR6K3', 'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 'CADM3', 'ACKR1', 'FCER1A', 'OR10J1', 'OR10J5', 'APCS', 'CRP', 'DUSP23', 'FCRL6', 'SLAMF8', 'VSIG8', 'CFAP45', 'TAGLN2', 'IGSF9', 'SLAMF9', 'PIGM', 'KCNJ10', 'KCNJ9', 'IGSF8', 'ATP1A2', 'ATP1A4', 'CASQ1', 'PEA15', 'DCAF8', 'PEX19', 'COPA', 'NCSTN', 'NHLH1', 'VANGL2', 'SLAMF6', 'CD84', 'SLAMF1',
+	'CD48', 'SLAMF7', 'LY9', 'CD244', 'ITLN1', 'ITLN2', 'F11R', 'TSTD1', 'USF1', 'ARHGAP30', 'NECTIN4', 'KLHDC9', 'PFDN2', 'UFC1', 'USP21', 'ADAMTS4', 'FCER1G', 'APOA2', 'NR1I3', 'PCP4L1']
+	run(genes, 'downstream')
+
+	#DOUBLES
 	#101 genes
 	# genes  = ['SLC25A44', 'PMF1-BGLAP', 'GLMP', 'VHLL', 'CCT3', 'RHBG', 'MEF2D', 'IQGAP3', 'TTC24', 'NAXE', 'HAPLN2', 'BCAN', 'NES', 'CRABP2', 'METTL25B', 'MRPL24', 'HDGF', 'PRCC', 'NTRK1', 'PEAR1', 'ARHGEF11', 'ETV3L', 'ETV3', 'FCRL5', 'FCRL4', 'FCRL3', 'FCRL2', 'FCRL1', 'CD5L', 'KIRREL1', 'CD1D', 'CD1A', 'CD1B', 'CD1E', 'OR10T2', 'OR10K2', 'OR10K1', 'OR10R2', 'OR6Y1', 'OR6P1', 'OR10X1', 'SPTA1', 'OR6K2', 'OR6K3', 'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 'CADM3', 'ACKR1', 'FCER1A']
 	# genes = ['OR10J1', 'OR10J5', 'APCS', 'CRP', 'DUSP23', 'FCRL6', 'SLAMF8', 'VSIG8', 'CFAP45', 'TAGLN2', 'IGSF9', 'SLAMF9', 'PIGM', 'KCNJ10', 'KCNJ9', 'IGSF8', 'ATP1A2', 'ATP1A4', 'CASQ1', 'PEA15', 'DCAF8', 'PEX19', 'COPA', 'NCSTN', 'NHLH1', 'VANGL2', 'SLAMF6', 'CD84', 'SLAMF1']
 	# genes = ['CD48', 'SLAMF7', 'LY9', 'CD244', 'ITLN1', 'ITLN2', 'F11R', 'TSTD1', 'USF1', 'ARHGAP30', 'NECTIN4', 'KLHDC9', 'PFDN2', 'UFC1', 'USP21', 'ADAMTS4', 'FCER1G', 'APOA2', 'NR1I3', 'PCP4L1']
 	# run(genes, 'downstream')
 
-	genes  = ['SLC25A44', 'PMF1-BGLAP', 'GLMP', 'VHLL', 'CCT3', 'RHBG', 'MEF2D', 'IQGAP3', 'TTC24', 'NAXE', 'HAPLN2', 'BCAN', 'NES', 'CRABP2', 'METTL25B', 'MRPL24', 'HDGF', 'PRCC', 'NTRK1', 'PEAR1', 'ARHGEF11', 'ETV3L', 'ETV3', 'FCRL5', 'FCRL4', 'FCRL3', 'FCRL2', 'FCRL1', 'CD5L', 'KIRREL1']
+	# genes  = ['SLC25A44', 'PMF1-BGLAP', 'GLMP', 'VHLL', 'CCT3', 'RHBG', 'MEF2D', 'IQGAP3', 'TTC24', 'NAXE', 'HAPLN2', 'BCAN', 'NES', 'CRABP2', 'METTL25B', 'MRPL24', 'HDGF', 'PRCC', 'NTRK1', 'PEAR1', 'ARHGEF11', 'ETV3L', 'ETV3', 'FCRL5', 'FCRL4', 'FCRL3', 'FCRL2', 'FCRL1', 'CD5L', 'KIRREL1']
 	# genes = ['CD1D', 'CD1A', 'CD1B', 'CD1E', 'OR10T2', 'OR10K2', 'OR10K1', 'OR10R2', 'OR6Y1', 'OR6P1', 'OR10X1', 'SPTA1', 'OR6K2', 'OR6K3', 'OR6K6', 'OR6N1', 'PYHIN1', 'IFI16', 'AIM2', 'CADM3', 'ACKR1', 'FCER1A']
 	# genes = ['OR10J1', 'OR10J5', 'APCS', 'CRP', 'DUSP23']
 	# genes = ['FCRL6', 'SLAMF8', 'VSIG8', 'CFAP45', 'TAGLN2', 'IGSF9', 'SLAMF9', 'PIGM', 'KCNJ10', 'KCNJ9', 'IGSF8', 'ATP1A2', 'ATP1A4', 'CASQ1', 'PEA15', 'DCAF8', 'PEX19', 'COPA', 'NCSTN', 'NHLH1', 'VANGL2', 'SLAMF6', 'CD84', 'SLAMF1', 'CD48']
 	# genes = ['SLAMF7', 'LY9', 'CD244', 'ITLN1', 'ITLN2', 'F11R', 'TSTD1', 'USF1', 'ARHGAP30', 'NECTIN4', 'KLHDC9', 'PFDN2', 'UFC1', 'USP21', 'ADAMTS4', 'FCER1G', 'APOA2', 'NR1I3', 'PCP4L1']
-	run(genes, 'upstream')
+	# run(genes, 'upstream')
 
 	# test set = 150 genes (75 + ACKR1 + 74)
 	# genes = ['MUC1', 'THBS3', 'GBA', 'FAM189B', 'SCAMP3', 
