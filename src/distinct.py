@@ -19,9 +19,14 @@ PURPOSE: gets count for each haplotype (number of times either as duplicate or
 INPUT: filename
 OUTPUT: csv with counts, sorted by number of counts (descending)
 '''
-def getCounts(filename):
+def getCounts(df):
+# def getCounts():
 	# NOTE: longest haplotype first
-	df = pd.read_csv(filename, sep="\t")
+	
+	# filename = '/Users/afratzscher/Documents/GitHub/ACKR1-Algorithm/results/ACKR1/haplotypes_ACKR1.vcf'
+	# df = pd.read_csv(filename, sep="\t")
+
+	df.columns = df.columns.astype(str)
 	info = df.head(3) #stores id, ref, alt (not used but important)
 	df = df.drop(df.head(3).index)
 	df = df.loc[(df.iloc[:, 1:-5] != 'N').any(1)] # removes haplotypes where only N
@@ -117,7 +122,8 @@ def getCounts(filename):
 	info.insert(loc=1, column='haplotypeID', value = '-')
 	info.insert(loc=2, column='subsamples', value = '-')
 	info.insert(loc=3, column='identical', value = '-')
-	info['counts'] = 0
+	# info['counts'] = 0
+	info.loc[:, 'counts'] = 0 
 	del info['numHeteroSNPs']
 
 	# remove identical haplotypes
@@ -145,11 +151,13 @@ def getDistinct(df, info):
 	
 	df.to_csv(distinctFile, sep="\t", mode='a', index = False)
 	
-def main():
+def main(df):
+# def main():
 	print('here')
 	print('*****STARTING DISTINCT*****')
 	global countFile
 	global distinctFile
+	global filename
 	filename = config.__FILEPATH__ + "haplotypes_" + config.__FILENAME__
 	# countFile = config.__FILEPATH__ + "count_" + config.__FILENAME__
 	distinctFile = config.__FILEPATH__ +  "distinct_" + config.__FILENAME__
@@ -159,4 +167,5 @@ def main():
 	if fileCheck.is_file():
 		return
 
-	getCounts(filename)
+	getCounts(df)
+	# getCounts()

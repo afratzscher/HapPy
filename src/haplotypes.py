@@ -19,8 +19,7 @@ PURPOSE: gets haplotypes
 INPUT: filename
 OUTPUT: haplotype csv
 '''
-def getHaplotypes(filename):
-	df = pd.read_csv(filename, sep="\t")
+def getHaplotypes(df):
 	
 	#if no samples left (i.e. all samples have >1 hetero SNP), warn user and quit
 	if len(df.columns) == 9: # means no samples
@@ -37,6 +36,7 @@ def getHaplotypes(filename):
 	df = sequence.main(df) 
 	df = df.dropna(axis=0, how="all").reset_index(drop=True) # delete rows with all nan
 
+	print('start unambi')
 	# get unambiguous haplotypes
 	df = getUnambiguous(df)
 	
@@ -106,9 +106,10 @@ def getHaplotypes(filename):
 	df = df.rename(columns = {'POS': 'idx'})
 	df = df.set_index('idx')
 	df = sortHaplotypes(df)
-	
+
 	df.to_csv(haplotypeFile, sep="\t", mode='a', index = False)
-	
+	return df
+
 '''
 FUNCTION: getUnambiguous(df)
 PURPOSE: gets part of haplotype that is unambiguous
@@ -242,15 +243,19 @@ def sortHaplotypes(df):
 	
 	return df
 
-def main():
+def main(df):
 	print('*****STARTING HAPLOTYPES*****')
 	global haplotypeFile
 	filename = config.__FILEPATH__ + "cleaned_" + config.__FILENAME__
-	haplotypeFile = config.__FILEPATH__ + "haplotypes_" + config.__FILENAME__	
+	distinctFile = config.__FILEPATH__ +  "distinct_" + config.__FILENAME__
 
-	# if already have haplotypes
-	fileCheck = Path(haplotypeFile)
+	# if already have counts
+	fileCheck = Path(distinctFile)
 	if fileCheck.is_file():
 		return
 
-	getHaplotypes(filename)
+	# df = pd.read_csv(filename, sep="\t")
+
+	df = getHaplotypes(df)
+	print(df)
+	return df

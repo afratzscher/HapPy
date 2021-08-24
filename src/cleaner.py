@@ -20,16 +20,16 @@ OUTPUT: list of individuals from phase 3 of 1000GP
 '''
 def getIndividuals():
 	# this file holds ID for the 2504 individuals 
-	indFile = 'integrated_call_samples_v3.20130502.ALL.panel.txt'
+	indFile = 'data/integrated_call_samples_v3.20130502.ALL.panel.txt'
 	data = pd.read_csv(indFile, sep="\t")
 	indi = []
 	for i in data['sample']:
 		indi.append(i)
 	return indi
 
-def manualclean(df):
-	df = df[df['ID'] != 'rs529460769']
-	return df
+# def manualclean(df):
+# 	df = df[df['ID'] != 'rs529460769']
+# 	return df
 '''
 FUNCTION: cleanFiltered()
 PURPOSE: removes samples that are not part the 2504 
@@ -91,7 +91,8 @@ def cleanFiltered(individuals):
 	print(len(cleanedsamples))
 	print('claen')
 	# df = manualclean(df)
-	df.to_csv(cleanedName, sep="\t", mode='a', index=False)
+	# df.to_csv(cleanedName, sep="\t", mode='a', index=False)
+	return df
 	
 '''CLEAN WITHOUT FILTERING INDIVIDUALS'''
 def clean():
@@ -143,7 +144,8 @@ def clean():
 			del df[i]
 
 	# df = manualclean(df)
-	df.to_csv(cleanedName, sep="\t", mode='a', index=False)
+	# df.to_csv(cleanedName, sep="\t", mode='a', index=False)
+	return df
 
 '''
 FUNCTION: rangeSelection(df)
@@ -159,18 +161,24 @@ def rangeSelection(df):
 def main():
 	print('*****STARTING CLEANER*****')
 	global filename
-	global cleanedName
+	# global cleanedName
 	filename = config.__FILEPATH__ + config.__FILENAME__
 	config.__FILENAME__ = config.__FILENAME__[len('1000G_'):]
-	cleanedName = config.__FILEPATH__ + "cleaned_" + config.__FILENAME__
-	
-	# if already cleaned
-	fileCheck = Path(cleanedName)
+	distinctFile = config.__FILEPATH__ +  "distinct_" + config.__FILENAME__
+
+	# if already have counts
+	fileCheck = Path(distinctFile)
 	if fileCheck.is_file():
 		return
 	
-	if config.__FILTERED__:
-		individuals = getIndividuals()
-		cleanFiltered(individuals)
-	else:
-		clean()
+	individuals = getIndividuals()
+	df = cleanFiltered(individuals)	
+	df = df.reset_index(drop=True)
+	# df.to_csv(cleanedName, sep="\t", mode='a', index=False)
+	return df
+
+	# if config.__FILTERED__:
+	# 	individuals = getIndividuals()
+	# 	cleanFiltered(individuals)
+	# else:
+	# 	clean()

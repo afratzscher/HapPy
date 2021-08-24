@@ -7,11 +7,16 @@ def select(before, after):
 	direct = os.getcwd()
 	df = pd.read_json(direct + '/data/chr1.json')
 	idx = df[df['gene'] == 'ACKR1'].index.tolist()[0]
+	# print(idx)
 
 	flag = True
 	while flag:
 		prevgenes = df.loc[idx-i:idx-1]
 		prevgenes = prevgenes.loc[prevgenes['skip'] == False]
+		# print(prevgenes)
+		# print(len(prevgenes))
+		# print(before)
+		# exit()
 		if len(prevgenes) < before:
 			i+=1
 		else:
@@ -33,11 +38,13 @@ def select(before, after):
 
 def main():
 # 272 before ACKR1 on long arm
-	before = 50 # number genes before ACKR1
-	after = 50 # number genes after ACKR1 -> TO CHANGE
+	before = 272 # number genes before ACKR1
+	# before = 0
+	# after = 559 # number genes after ACKR1 
+	after = 50
 
 	lst = select(before, after)
-	print(lst)
+	# print(lst)
 	print(len(lst))
 	print(lst[::-1])
 

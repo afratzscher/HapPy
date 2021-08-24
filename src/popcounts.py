@@ -13,6 +13,7 @@ import numpy as np
 import math
 from pathlib import Path
 import time
+import os
 
 '''
 FUNCTION: getPopsMostFreq(filename)
@@ -68,8 +69,8 @@ INPUT: dataframe and replaceType (identical or subsample)
 OUTPUT: dataframe
 '''
 def replacePop(df, replaceType):
-	# tf = pd.read_csv('integrated_call_samples_v3.20130502.ALL.panel.txt', sep="\t")
-	tf = pd.read_csv('20130606_g1k_3202_samples_ped_population.txt', sep=" ") # for 3202 NYGC data
+	tf = pd.read_csv(os.getcwd() + '/data/integrated_call_samples_v3.20130502.ALL.panel.txt', sep="\t")
+	# tf = pd.read_csv('20130606_g1k_3202_samples_ped_population.txt', sep=" ") # for 3202 NYGC data
 	# add columns for these pops
 	for x in config.__POPS__:
 		df[x] = 0
@@ -96,12 +97,13 @@ def replacePop(df, replaceType):
 			for i in range(0, len(x)):
 				# look for sample in "samples" df and get pop, super_pop, gender
 				if x[i][2:] not in dup:
-					idx = tf[tf['SampleID'] == x[i][2:]].index.tolist()
-					sample_pop = tf.iloc[idx[0]]['Population']
-					sample_super_pop = tf.iloc[idx[0]]['Superpopulation']
-					# idx = tf[tf['sample'] == x[i][2:]].index.tolist()
-					# sample_pop = tf.iloc[idx[0]]['pop']
-					# sample_super_pop = tf.iloc[idx[0]]['super_pop']
+					#for 3202 file
+					# idx = tf[tf['SampleID'] == x[i][2:]].index.tolist()
+					# sample_pop = tf.iloc[idx[0]]['Population']
+					# sample_super_pop = tf.iloc[idx[0]]['Superpopulation']
+					idx = tf[tf['sample'] == x[i][2:]].index.tolist()
+					sample_pop = tf.iloc[idx[0]]['pop']
+					sample_super_pop = tf.iloc[idx[0]]['super_pop']
 
 					# increment count if new pop
 					if sample_pop not in dup_pop:

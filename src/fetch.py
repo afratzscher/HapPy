@@ -94,7 +94,6 @@ def makeCommands(name, ftp, cmds, xy):
 	cmds.append('rm ' + name + '.tbi')
 	cmds.append('rm ' + refVersion + '.tbi')
 
-	print(cmds)
 	return cmds
 
 def fetchSeq(filepath):
