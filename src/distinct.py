@@ -19,13 +19,10 @@ PURPOSE: gets count for each haplotype (number of times either as duplicate or
 INPUT: filename
 OUTPUT: csv with counts, sorted by number of counts (descending)
 '''
-def getCounts(df):
-# def getCounts():
+# def getCounts(df):
+def getCounts(filename):
 	# NOTE: longest haplotype first
-	
-	# filename = '/Users/afratzscher/Documents/GitHub/ACKR1-Algorithm/results/ACKR1/haplotypes_ACKR1.vcf'
-	# df = pd.read_csv(filename, sep="\t")
-
+	df = pd.read_csv(filename, sep="\t")
 	df.columns = df.columns.astype(str)
 	info = df.head(3) #stores id, ref, alt (not used but important)
 	df = df.drop(df.head(3).index)
@@ -122,20 +119,21 @@ def getCounts(df):
 	info.insert(loc=1, column='haplotypeID', value = '-')
 	info.insert(loc=2, column='subsamples', value = '-')
 	info.insert(loc=3, column='identical', value = '-')
-	# info['counts'] = 0
 	info.loc[:, 'counts'] = 0 
 	del info['numHeteroSNPs']
 
 	# remove identical haplotypes
 	df = df.dropna(axis=0, subset=['identical'])
 	df.insert(loc=1, column='haplotypeID', value=["HAP" + str(i+1) for i in range(len(df.index))])
-	# sort by count number (descending)
-	countsorted = df.sort_values(by='counts', ascending=False)
-	df2 = pd.concat([info, countsorted])
+	
+	# #sort by count number (descending)
+	# countsorted = df.sort_values(by='counts', ascending=False)
+	# df2 = pd.concat([info, countsorted])
 	# print(df2)
 	# df2.to_csv(countFile, sep="\t", mode='a', index = False)
 	
 	getDistinct(df, info)
+	return
 
 '''
 FUNCTION: getDistinct(df, samples)
@@ -150,12 +148,13 @@ def getDistinct(df, info):
 	df = pd.concat([info, df])
 	
 	df.to_csv(distinctFile, sep="\t", mode='a', index = False)
+	return
 	
-def main(df):
-# def main():
+# def main(df):
+def main():
 	print('here')
 	print('*****STARTING DISTINCT*****')
-	global countFile
+	# global countFile
 	global distinctFile
 	global filename
 	filename = config.__FILEPATH__ + "haplotypes_" + config.__FILENAME__
@@ -167,5 +166,5 @@ def main(df):
 	if fileCheck.is_file():
 		return
 
-	getCounts(df)
-	# getCounts()
+	getCounts(filename)
+	return

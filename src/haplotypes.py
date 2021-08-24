@@ -19,7 +19,8 @@ PURPOSE: gets haplotypes
 INPUT: filename
 OUTPUT: haplotype csv
 '''
-def getHaplotypes(df):
+def getHaplotypes(filename):
+	df = pd.read_csv(filename, sep="\t")
 	
 	#if no samples left (i.e. all samples have >1 hetero SNP), warn user and quit
 	if len(df.columns) == 9: # means no samples
@@ -240,22 +241,20 @@ def sortHaplotypes(df):
 	df = pd.concat([excluded, included])
 	df = df.reset_index()
 	df = df.rename(columns = {'index': 'POS'})
-	
 	return df
 
-def main(df):
+# def main(df):
+def main():
 	print('*****STARTING HAPLOTYPES*****')
 	global haplotypeFile
 	filename = config.__FILEPATH__ + "cleaned_" + config.__FILENAME__
 	distinctFile = config.__FILEPATH__ +  "distinct_" + config.__FILENAME__
+	haplotypeFile = config.__FILEPATH__ +  "distinct_" + config.__FILENAME__
 
 	# if already have counts
 	fileCheck = Path(distinctFile)
 	if fileCheck.is_file():
 		return
 
-	# df = pd.read_csv(filename, sep="\t")
-
-	df = getHaplotypes(df)
-	print(df)
-	return df
+	getHaplotypes(filename)
+	return

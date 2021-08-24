@@ -31,7 +31,7 @@ def main():
 	'PPIAL4D', 'PPIAL4H', 'RBM8A',
 	'SRGAP2B', 'TXNIP']
 
-	names = ['PPIAL4E']
+	names = ['ACKR1']
 
 	print(len(names))
 	cmd = makeCommands(names)

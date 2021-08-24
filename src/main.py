@@ -104,20 +104,14 @@ def execute():
     print(config.__FILENAME__)
 
     start_time = time.time()
-    #CHECK
     fetch.main()
-    df = cleaner.main()
-    df = haplotypes.main(df)
-    df = distinct.main(df)
-    #STOP
-    # popcounts.main()
-    #START HERE
-    # visualization.main()
-    #STOP HERE
-    #START HERE
-    # userfile.main()
-    #STOP HERE
-    # haplotypeGraph.main()
+    cleaner.main()
+    haplotypes.main()
+    distinct.main()
+    popcounts.main()
+    visualization.main()
+    userfile.main()
+    haplotypeGraph.main()
     print("--- total time %s seconds ---" % (time.time() - start_time))
              
 def main():	

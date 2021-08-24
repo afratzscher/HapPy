@@ -90,9 +90,8 @@ def cleanFiltered(individuals):
 	print('init numb')
 	print(len(cleanedsamples))
 	print('claen')
-	# df = manualclean(df)
-	# df.to_csv(cleanedName, sep="\t", mode='a', index=False)
-	return df
+	df.to_csv(cleanedName, sep="\t", mode='a', index=False)
+	return 
 	
 '''CLEAN WITHOUT FILTERING INDIVIDUALS'''
 def clean():
@@ -144,8 +143,8 @@ def clean():
 			del df[i]
 
 	# df = manualclean(df)
-	# df.to_csv(cleanedName, sep="\t", mode='a', index=False)
-	return df
+	df.to_csv(cleanedName, sep="\t", mode='a', index=False)
+	return
 
 '''
 FUNCTION: rangeSelection(df)
@@ -161,21 +160,21 @@ def rangeSelection(df):
 def main():
 	print('*****STARTING CLEANER*****')
 	global filename
-	# global cleanedName
+	global cleanedName
 	filename = config.__FILEPATH__ + config.__FILENAME__
 	config.__FILENAME__ = config.__FILENAME__[len('1000G_'):]
 	distinctFile = config.__FILEPATH__ +  "distinct_" + config.__FILENAME__
+	cleanedName = config.__FILEPATH__ +  "cleaned_" + config.__FILENAME__
+
 
 	# if already have counts
-	fileCheck = Path(distinctFile)
+	fileCheck = Path(cleanedName)
 	if fileCheck.is_file():
 		return
 	
 	individuals = getIndividuals()
-	df = cleanFiltered(individuals)	
-	df = df.reset_index(drop=True)
-	# df.to_csv(cleanedName, sep="\t", mode='a', index=False)
-	return df
+	cleanFiltered(individuals)
+	return
 
 	# if config.__FILTERED__:
 	# 	individuals = getIndividuals()
