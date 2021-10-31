@@ -21,9 +21,9 @@ OUTPUT: haplotype csv
 '''
 def getHaplotypes(filename):
 	df = pd.read_csv(filename, sep="\t")
-	
+
 	#if no samples left (i.e. all samples have >1 hetero SNP), warn user and quit
-	if len(df.columns) == 9: # means no samples
+	if (len(df.columns) == 9) or (len(df) == 1 and math.isnan(df['POS'][0])): # means no samples
 		print("*****WARNING: NO SAMPLES REMAINING AFTER CLEANING, ENDING PROGRAM*****")
 		print("*****This means there are no haplotypes that can be found using this approach*****")
 		quit()
@@ -248,11 +248,10 @@ def main():
 	print('*****STARTING HAPLOTYPES*****')
 	global haplotypeFile
 	filename = config.__FILEPATH__ + "cleaned_" + config.__FILENAME__
-	distinctFile = config.__FILEPATH__ +  "distinct_" + config.__FILENAME__
-	haplotypeFile = config.__FILEPATH__ +  "distinct_" + config.__FILENAME__
+	haplotypeFile = config.__FILEPATH__ +  "haplotypes_" + config.__FILENAME__
 
 	# if already have counts
-	fileCheck = Path(distinctFile)
+	fileCheck = Path(haplotypeFile)
 	if fileCheck.is_file():
 		return
 

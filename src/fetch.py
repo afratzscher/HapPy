@@ -76,12 +76,19 @@ def makeCommands(name, ftp, cmds, xy):
 	if cmds == "":
 		cmds = []
 	#define ftp
-	cmds.append(ftp+name)
+	if local_flag:
+		cmds.append("ftp=/Volumes/AF_SSD/CCDG_14151_B01_GRM_WGS_2020-08-05_chr1.filtered.shapeit2-duohmm-phased.vcf.gz")
+	else:
+		cmds.append(ftp+name)
 
 	#define dbSNP ftp -> GRCH38 BUILD 155
 	baseUrl = 'dbSNPFTP=ftp://ftp.ncbi.nih.gov/snp/redesign/latest_release/VCF/'
 	refVersion = 'GCF_000001405.39.gz' #HAS BEEN CHANGED JUNE 10th 2021
-	cmds.append(baseUrl+refVersion)
+
+	if local_flag:
+		cmds.append("dbSNPFTP=/Volumes/AF_SSD/GCF_000001405.39.gz")
+	else:
+		cmds.append(baseUrl+refVersion)
 
 	#command to get data file
 	baseName =  config.__FILENAME__[len('1000G_'):] 
@@ -91,14 +98,17 @@ def makeCommands(name, ftp, cmds, xy):
 	cmds.append('bcftools query "$dbSNPFTP" -f "%POS\t%ID\t%REF\t%ALT\n" -r ' + config.__CHRVERSION__
 					+ ":" + str(config.__START__) + "-" + str(config.__END__) + "> " + config.__FILEPATH__ + "dbSNP_" + baseName)
 	# clean up
-	cmds.append('rm ' + name + '.tbi')
-	cmds.append('rm ' + refVersion + '.tbi')
+	if not local_flag:
+		cmds.append('rm ' + name + '.tbi')
+		cmds.append('rm ' + refVersion + '.tbi')
 
+	print(cmds)
 	return cmds
 
 def fetchSeq(filepath):
 	createFolder(filepath) # create folder if doesnt exist
 
+	# return # TO DELETE
 	#if DONT have data, fetch
 	if not Path(config.__FILEPATH__ + config.__FILENAME__).is_file():
 		# if dont have raw data, fetch
@@ -110,7 +120,6 @@ def fetchSeq(filepath):
 			vcfgzName = "CCDG_14151_B01_GRM_WGS_2020-08-05_chr" + str(config.__CHR__) + ".filtered.shapeit2-duohmm-phased.vcf.gz"
 			cmd = makeCommands(vcfgzName, ftp, "", "")
 			run_commands(*cmd)
-		
 		#then combine raw and dbSNP
 		combine()
 
@@ -124,6 +133,12 @@ def selectGene(filepath):
 	getData(filepath)
 
 def main():
+	global local_flag
+	local_flag = False
+
+	if config.__LOCAL__:
+		local_flag = True
+
 	print("*****STARTING SELECTION*****")
 	config.__FOLDERPATH__ = os.getcwd()[:-(len('src/'))]
 	errCode = selectGene(config.__FOLDERPATH__)

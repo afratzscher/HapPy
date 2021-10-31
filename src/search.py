@@ -4,7 +4,7 @@ import json
 import os
 
 def getVersion():
-	versions = pd.read_csv('GRCh38_chr_versions.txt', sep = '\t')
+	versions = pd.read_csv(os.getcwd() + '/data/GRCh38_chr_versions.txt', sep = '\t')
 	config.__CHRVERSION__ = versions.loc[versions['chr'] == str(config.__CHR__)]['version'].values[0]
 
 

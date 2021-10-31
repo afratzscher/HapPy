@@ -166,6 +166,7 @@ def main():
 	distinctFile = config.__FILEPATH__ +  "distinct_" + config.__FILENAME__
 	cleanedName = config.__FILEPATH__ +  "cleaned_" + config.__FILENAME__
 
+	# return # TO DELETE
 
 	# if already have counts
 	fileCheck = Path(cleanedName)

@@ -145,7 +145,7 @@ def getFASTA(chrom):
 
 def main():
 	print('*****STARTING TELOMERE/CENTROMERE CALCULATION*****')
-	name = os.getcwd().rsplit("/",1)[0] + "/src/GRCh38_chr_versions.txt"
+	name = os.getcwd().rsplit("/",1)[0] + "/src/data/GRCh38_chr_versions.txt"
 	df = pd.read_csv(name, sep = '\t')
 
 	for index,row in df.iterrows():

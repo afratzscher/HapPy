@@ -5,6 +5,7 @@ INPUT: none
 OUTPUT: none
 CREATED BY: Anne-Sophie Fratzscher
 '''
+__LOCAL__ = False
 __FOLDERPATH__ = ""
 __FOLDERNAME__ = ""
 __GROUPING__ = ['pop', 'super'] 
