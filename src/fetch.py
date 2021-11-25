@@ -136,9 +136,6 @@ def main():
 	global local_flag
 	local_flag = False
 
-	if config.__LOCAL__:
-		local_flag = True
-
 	print("*****STARTING SELECTION*****")
 	config.__FOLDERPATH__ = os.getcwd()[:-(len('src/'))]
 	errCode = selectGene(config.__FOLDERPATH__)

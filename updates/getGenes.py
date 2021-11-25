@@ -1,6 +1,4 @@
-# TO DO: read annotRelease from file and UPDATE once in a while
-## TO DO: ask for email
-#NOTE: changes start/end values so that 1st nt has value of 1 (vs. stored as 1st nt has index of 0)#
+# Gets gene, their locations, and the intergenic region 
 from Bio import Entrez
 import xmltodict
 import ujson
@@ -10,13 +8,16 @@ import pandas as pd
 from pathlib import Path
 
 def getInfo(chrom):
-	if chrom == 1:
-		val = 'NC_000001'
-		start = 1
-		end = 248956422
-	else:
-		print("TO ADD")
-	return val, start, end
+	df = pd.read_csv('GRCh38_chr_sites.txt', sep = '\t')
+	row = df[df['chr'] == chrom]
+	short_start = int(row['telomere1_end']) + 1
+	short_end = int(row['centromere_start']) - 1
+	long_start = int(row['centromere_end']) + 1
+	long_end = int(row['telomere2_start']) - 1
+	end = int(row['telomere2_end'])
+	val = row['name'][chrom-1].split('.')[0]
+	print(chrom, short_start, short_end, long_start, long_end, end)
+	return val, short_start, short_end, long_start, long_end, end
 
 def eSearch(chrom, start, end):
 	Entrez.email = "anne-sophie.fratzscher@mail.mcgill.ca"
@@ -60,14 +61,13 @@ def countOverlap(df):
 
 def query(chrom):
 	lst = []
-	val, start, end = getInfo(chrom) # should store chrom val, start, end
-	dsdocs = eSearch(val, start, end)
+	val, short_start, short_end, long_start, long_end, end = getInfo(chrom) # should store chrom val, start, end
+	dsdocs = eSearch(val, 1, end)
 	length=0
 	#get set of dbVar DocumentSummary (dsdocs) and print report for each (ds)
 	for ds in dsdocs ['eSummaryResult']['DocumentSummarySet']['DocumentSummary']:
 		length+=1
 		geneName = ds['Name']
-		# print(geneName)
 		if 'pseudogene' in ds['Description']:
 			pseudoflag = True
 		else:
@@ -78,11 +78,15 @@ def query(chrom):
 			pseudo = 'gene'
 		loc = ds['MapLocation']
 
-		#NOTE: FAM151A and CYP4X1 are on short arm, but missing annotation in file for some reason...
+		#NOTE: some genes missing annotation -> manually found and defined 
 		if geneName == 'FAM151A':
 			loc = 'p'
 		if geneName == 'CYP4X1':
 			loc = 'p'
+		if geneName == 'LRRC51':
+			loc = 'q'
+		if geneName == 'TOMT':
+			loc = 'q'
 
 		loc = ''.join(filter(str.isalpha, loc))
 		loc = ''.join(set(loc)) # removes duplicate letter (sometimes get qq or pp)
@@ -92,6 +96,8 @@ def query(chrom):
 			loc = 'long'
 
 		for p in ds['LocationHist']['LocationHistType']:
+			if type(p) == str:
+				continue
 			if p['AnnotationRelease'] == annotRelease:
 				start = int(p['ChrStart']) + 1 # bc 1st nt has index of 0 (instead of 1)
 				end = int(p['ChrStop']) + 1
@@ -107,7 +113,7 @@ def query(chrom):
 				break
 			break
 	lst = sorted(lst, key = lambda i: i['start'])
-
+	del dsdocs
 	# convert to df
 	df = pd.DataFrame(lst)	
 	df = countOverlap(df)
@@ -115,20 +121,7 @@ def query(chrom):
 	df = df.sort_values('start').reset_index(drop=True)
 	df = df.sort_values('end').reset_index(drop=True)
 	df = df.sort_values('start').reset_index(drop=True)
-	return df
-
-# def toCSV(df, file):
-# 	today = date.today().strftime("%B %d %Y")
-
-# 	df = df.replace(False, "")
-# 	name = file[:-5] + '.csv'
-# 	f = open(name, "w", newline='')
-# 	f.write("# Updated on: " + today + "\n")
-# 	f.write("# NOTE: short arm = nt 10000-125184587; long arm = nt 143184588-248946422 \n")
-
-# 	# remove false and replace with None for simplicity when reading for overlapping genes
-# 	df.to_csv(f, index = None)
-# 	f.close()
+	return df, val, short_start, short_end, long_start, long_end, end
 
 def rangeCalc(df, first, last, longFlag):
 	startlist = []
@@ -186,7 +179,7 @@ def rangeCalc(df, first, last, longFlag):
 	return df
 
 
-def getRange(df):
+def getRange(df, val, short_start, short_end, long_start, long_end, end):
 	# # swap minus start/end so that larger number is end
 	# minus = df[df['strand'] == 'minus'].index.tolist()
 	# df.loc[minus,['start','end']] = df.loc[minus,['end','start']].values
@@ -197,23 +190,19 @@ def getRange(df):
 
 	# do for short arm first
 	shortarm =  df[df['arm'] == 'short']
-	shortarm = rangeCalc(shortarm, 10000, 125184587, False)
-	file = direct + "/chr1_short.json"
+	shortarm = rangeCalc(shortarm, short_start, short_end, False)
+	file = direct + "/chr" + str(chrom) + "_short.json"
 	# shortarm.insert(loc=0, column='gene_num', value=range(1, len(shortarm)+1))
-	shortarm.to_json(file, orient='records', indent=4)
+	# shortarm.to_json(file, orient='records', indent=4)
 	# toCSV(shortarm, file)
 
 	# then do long arm
 	longarm =  df[df['arm'] == 'long'].reset_index(drop=True)
-	longarm = rangeCalc(longarm, 143184588, 248946422, True)
-	file = direct + "/chr1_long.json"
-	# longarm.insert(loc=0, column='gene_num', value=range(1, len(longarm)+1))
-	longarm.to_json(file, orient='records', indent=4)
-	# toCSV(longarm, file)
+	longarm = rangeCalc(longarm, long_start, 248946422, True)
+	file = direct +  "/chr" + str(chrom) + "_long.json"
+	# longarm.to_json(file, orient='records', indent=4)
 
 	#have file with both arms together
-	# del longarm['gene_num']
-	# del shortarm['gene_num']
 	df = shortarm.append(longarm)
 	df = df.sort_values('start').reset_index(drop=True)
 
@@ -225,9 +214,8 @@ def getRange(df):
 	# del df['start_overlap']
 	# del df['end_overlap']
 
-	file = direct + "/chr1.json"
+	file = direct + "/chr" + str(chrom) + ".json"
 	df.to_json(file, orient='records', indent=4)
-	return df
 	# toCSV(df, file)
 
 def createFolder():
@@ -283,20 +271,21 @@ def main():
 	global annotRelease 
 	global chrom
 	global direct
+
+	# short_start, short_end, long_start, long_end, end
+
 	direct = '/'.join(os.getcwd().split('/')[:-1]) + "/src/data"
 
 	createFolder()
 	annotRelease = '109.20210514'
 
 	# currently just for chrom 1
-	chrom = 1
-	df = query(chrom)
-	df = selectOverlapGenes(df)
-	df = getRange(df)
-
-	file = direct + "/chr1.json"
-	df.to_json(file, orient='records', indent=4)
-
+	for i in range(1, 23): 
+		chrom = i
+		if not os.path.isfile(direct + "/chr" + str(chrom) + ".json"):
+			df, val, short_start, short_end, long_start, long_end, end = query(chrom)
+			df = selectOverlapGenes(df)
+			getRange(df, val, short_start, short_end, long_start, long_end, end)
 
 if __name__ == '__main__':
 	main()

@@ -9,22 +9,24 @@ def getVersion():
 
 
 def getRange():
-	df = pd.read_json(os.getcwd() + '/data/chr1.json')
+	for i in range(1,23):
+		chrom = i
+		df = pd.read_json(os.getcwd() + '/data/chr' + str(chrom) + '.json')
 
-	# swap start/end for minus
-	if config.__GENENAME__ in df.gene.values:
-		idx = df[df['gene'] == config.__GENENAME__].index.tolist()[0]
-		gene = df.loc[idx]
+		# swap start/end for minus
+		if config.__GENENAME__ in df.gene.values:
+			idx = df[df['gene'] == config.__GENENAME__].index.tolist()[0]
+			gene = df.loc[idx]
 
-		config.__CHR__ = int(gene['chr'])
-		config.__GENESTART__ = int(gene['start'])
-		config.__GENEEND__ = int(gene['end'])
-		config.__START__ = int(gene['range_start'])
-		config.__END__ = int(gene['range_end'])
+			config.__CHR__ = int(gene['chr'])
+			config.__GENESTART__ = int(gene['start'])
+			config.__GENEEND__ = int(gene['end'])
+			config.__START__ = int(gene['range_start'])
+			config.__END__ = int(gene['range_end'])
 
-		getVersion()
+			getVersion()
 
-		return(0)
+			return(0)
 	else: # cant find gene
 		print('cant find gene')
 		return(-1)

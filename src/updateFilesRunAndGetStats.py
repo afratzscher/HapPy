@@ -6,7 +6,7 @@ import numpy as np
 
 file = 'chr1_long'
 direct = os.getcwd() + '/data/'
-newfile = direct + file + '_run.json'
+newfile = direct + 'run_log_' + file + '.json'
 
 
 #if no file, create
@@ -68,3 +68,5 @@ print('Number to run: ' + str(len(torun)))
 print(torun['gene'].tolist())
 print('Number of error: ' + str(len(error)))
 print(error['gene'].tolist())
+
+print(list(df['gene']))
