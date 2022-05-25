@@ -78,7 +78,7 @@ def query(chrom):
 			pseudo = 'gene'
 		loc = ds['MapLocation']
 
-		#NOTE: some genes missing annotation -> manually found and defined 
+		#NOTE: some genes missing arm annotation -> manually found and defined 
 		if geneName == 'FAM151A':
 			loc = 'p'
 		if geneName == 'CYP4X1':

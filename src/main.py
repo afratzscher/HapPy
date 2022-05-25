@@ -18,6 +18,7 @@ import visualization
 import popcounts
 import userfile
 import haplotypeGraph
+import os
 
 def getOptions():
 	parser = OptionParser()
@@ -71,7 +72,7 @@ def selectionOptions(opts):
 			print("Incorrect format. Use '-h' to get help")
 			exit(0)
 		string = option_dict.get('region').split(':')
-		config.__CHR__ = string[0][3]
+		config.__CHR__ = '11'#string[0][3]
 		string = string[1].split("-")
 		if(string[0]=='' or string[1]==''):
 			print("Incorrect format. Use '-h' to get help")

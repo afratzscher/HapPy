@@ -1,3 +1,4 @@
+#USING THIS ONE CURRENTLY
 # tries to build reference from full length haplos
 import os
 import pandas as pd
@@ -22,7 +23,7 @@ def getDF(file, numberrows = None):
 
 	df = df[3:][:].reset_index() # removes REF and ALT and ID rows
 
-	# df['counts'] = df['SAS'] # BY POPULATION
+	# df['counts'] = df['EAS'] # BY POPULATION
 	if numberrows is None:
 		df = df.sort_values(by='counts', ascending=False)
 		df = df[df['counts'] != 0] 
@@ -203,8 +204,105 @@ def main():
 	threshold = 10000 # 1 million takes too long, 500000 and 100,000 take too long as well
 	numGenes = 2500
 	
-	
-	genes = ['FAM72C', 'PPIAL4E', 'NBPF15', 'PPIAL4F']
+	# RESULTS: #
+	# 1.ANKRD35 - TXNIP (empty when adding HJV), 
+	# 2.NBPF10-PPIAL4H (ends with NBPF12)
+	# HAVE A LONG BREAK
+	# 3.NBPF12 - PPIAL4H (empty when adding NBPF12)
+	# ANOTHER LONG BREAK
+	# 4.GJA5 - GPR89B (empty when adding NBPF11)
+	# 5.NOTCH2NLC - H3C14 (empty when adding:  H2BC18)
+	# SHORT BREAK (maybe because missing H3C15)
+#NOTE: in this region where dont have breaks (but not multiple genes after), usually reading from full length haplos
+# (instead of distinct haplos, which we do if no full length haplos)
+	# 6.H4C15 - TUFT1 (empty when adding SNX27)
+	# 7.SNX27 - NPR1 (empty when adding:  INTS3)
+	# 8.INTS3 - TPM3 (empty because missing CFAP141)
+	# 9.UBAP2L - ARHGEF2 (empty when adding:  SSR2)
+	# 10.SSR2 - ARHGEF11 (empty when adding:  ETV3L)
+	# 11.ETV3L - FCER1A (empty when adding:  OR10J1)
+	# OR10J1 - SLAMF1 (empty when adding:  CD48)
+	# CD48 - FCGR2B (empty when adding FCRLA)
+	# FCRLA - NUF2 (empty when adding PBX1)
+	# break PBX1, LMX1A (reading from distinct)
+	# RXRG - TBX19 (empty when adding:  XCL2)
+	# break, XCL2, XCL1, DPT
+	# DPT - NMT2 (empty when adding: GORAB)
+	# break GORAB
+	# PRRX1 - FASLG (empty when adding: TNFSF18, reading from distinct)
+	#break TNFSF18
+	# TNFSF4 - RC3H1 (break because no RABGAP1L file)
+	# break because no RABGAP1L file
+	# CACYBP - KIAA0040 (empty when adding: TNR)
+	# break - tnr
+	# 20. COP1 - BRINP2 (break because no SEC16B file)
+	# break - CRYZL2P-SEC16B, RASAL2 (no file),TEX35, RALGPS2
+	# FAM20B - TDRD5 ( empty when adding:  FAM163A)
+	# FAM163A - QSOX1 ( empty when adding:  ACBD6)
+	#break ACBD6
+	# XPR1 - IER5 (empty when adding:  CACNA1E)
+	#break CACNA1E
+	# ZNF648- TEDDM1 (empty when adding:  RGSL1)
+	# RGSL1 - EDEM3 (empty when adding:  NIBAN1)
+	# NIBAN1 - IVNS1ABP (empty when adding:  HMCN1)
+	# HMCN1 - PTGS2 (too large: 'PLA2G4A')
+	#break BRINP3, 'BRINP3', 'RGS18',
+	# RGS21 - RGS13 empty when adding:  RGS2
+	# RGS2 - CDC73 (empty when adding:  KCNT2)
+	#break KCNT2
+	# 30. CFH - NEK7 empty when adding:  ATP6V1G3
+	# break ATP6V1G3, PTPRC, NR5A2, ZNF281
+	# KIF14 - GPR25 empty when adding:  INAVA
+	# INAVA - LAD1 (empty when adding:  TNNI1)
+	# TNNI1 - GPR37L1 (empty when adding:  PTPN7)
+	# PTPN7 - UBE2T (empty when adding:  PPP1R12B)
+	# break PPP1R12B, KDM5B
+	# RABIF - OPTC (empty when adding:  ATP2B4)
+	# break ATP2B4 , LAX1, ZC3H11A, SNRPE
+	# SOX13 - SLC45A3 (empty when adding:  NUCKS1)
+	# NUCKS1 - CTSE (RHEX missing)
+	# AVPR1B - PLXNA2 empty when adding:  CAMK1G
+	# CAMK1G - SYT14 empty when adding:  SERTAD4
+	# break - 'SERTAD4', 'HHAT', KCNH1(KCNH1 does not exist)
+	# 40. RCOR3 - DTL (empty when adding:  PPP2R5A)
+	# PPP2R5A - SMYD2 (CENPF error?)
+	#BREAK KCNK2, KCTD3, USH2A, ESRRG, GPATCH2, SPATA17, RRP15, TGFB2
+	# LYPLAL1 - HLX empty when adding:  DUSP10
+	# break DUSP10
+	#  HHIPL2- CAPN8 (empty when adding:  CAPN2)
+	# break CAPN2,TP53BP2
+	# FBXO28 - CNIH4 (empty when adding:  CNIH3)
+	# BREAK CNIH3, DNAH14, LBR, ENAH
+	# SRP9 - PARP1 (empty when adding:  STUM)
+	# break STUM,ITPKB 
+	# PSEN2 - CDC42BPA empty when adding:  ZNF678
+	# ZNF678 - WNT9A (empty when adding:  WNT3A)
+	# WNT3A - RHOU empty when adding:  RAB4A
+	# RAB4A - GALNT2 empty when adding:  PGBD5
+	# PGBD5 - TSNAX empty when adding:  DISC1
+	# break DISC1
+	# SIPA1L2 - PCNX2 empty when adding:  MAP3K21
+	# MAP3K21 - IRF2BP2 empty when adding:  TOMM20
+	# TOMM20 - ARID4B empty when adding:  GNG4
+	# BREAK = GNG4,LYST,NID1
+	# GPR137B - HEATR1 empty when adding:  ACTN2
+	# ACTN2 - MT1HL1 empty when adding:  RYR2
+	#  break RYR2', 'ZP4', 'CHRM3', FMN2 error, GREM2
+	# RGS7-EXO1 empty when adding:  BECN2
+	#### break BECN2, MAP1LC3C, PLD5, AKT3, ZBTB18
+	# C1orf100 - HNRNPU (empty when adding:  EFCAB2)
+	# break EFCAB2, KIF26B, SMYD3 (missing)
+	# TFB2M - SCCPDH (empty when adding:  AHCTF1)
+	# AHCTF1 - OR2T6 (empty OR2T1
+	 # break or2t1, missing OR2T7, ORT2T2
+	 # ORT2T2 - OR2T27 (empty when adding:  OR14I1)
+	 # break OR14I1,LYPD8
+	 # SH3BP5L - PGBD2
+
+
+	genes = ['SH3BP5L', 'ZNF672', 'ZNF692', 'PGBD2']
+	print(len(genes))
+	genes = genes[0:60]
 	print(len(genes))
 	run(genes, 'downstream')
 
