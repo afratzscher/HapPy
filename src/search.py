@@ -28,7 +28,7 @@ def getRange():
 
 			return(0)
 	else: # cant find gene
-		print('cant find gene')
+		print('ERROR: unable to find inputted gene')
 		return(-1)
 
 def main():

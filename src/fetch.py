@@ -107,8 +107,7 @@ def makeCommands(name, ftp, cmds, xy):
 
 def fetchSeq(filepath):
 	createFolder(filepath) # create folder if doesnt exist
-
-	# return # TO DELETE
+	
 	#if DONT have data, fetch
 	if not Path(config.__FILEPATH__ + config.__FILENAME__).is_file():
 		# if dont have raw data, fetch
@@ -124,13 +123,10 @@ def fetchSeq(filepath):
 		combine()
 
 # MAIN DECISION: picks which getData and makeCommands to use 
-def getData(filepath):
-	checkAutosomes(filepath)
-	fetchSeq(filepath)
-
 def selectGene(filepath):
 	# fetch data from 1000GP
-	getData(filepath)
+	checkAutosomes(filepath)
+	fetchSeq(filepath)
 
 def main():
 	global local_flag

@@ -25,16 +25,12 @@ def getOptions():
 	parser.add_option("-g", "--gene", dest="gene", default=False, type='string',
 					  help="select by gene", metavar="GENE")    
 	parser.add_option("-r", "--region", dest="region", default=False, type='string',
-					  help="select by region (GRCh38)", metavar="chr#:#-#")
-	parser.add_option("-a", "--all", dest="all", default=False, action="store_true",
-					  help="run for all of chr 1")
+					  help="select by region (GRCh38), input as chr#:#-#", metavar="chr#:#-#")
 	parser.add_option("-c", "--custom", dest="foldername", default=False, type='string',
 					  help="select a custom folder name (otherwise, is chr#:#-#)")
 	parser.add_option("-f", "--filter", dest="filter", default=False, action="store_true",
 					  help="filters data to only include original 2504 individuals")
-	
 	(opts, args) = parser.parse_args()
-
 	return opts
 
 def selectionOptions(opts):
@@ -42,10 +38,6 @@ def selectionOptions(opts):
 
 	if option_dict.get('filter'):
 		config.__FILTERED__ = True
-	if option_dict.get('all'):
-		print('run for all of chromosome 1')
-		print("TO IMPLEMENT (settings.py)")
-		return(2)
 
 	if option_dict.get('gene') and option_dict.get('region'):
 		print("Select either gene or region (not both)")
@@ -106,13 +98,13 @@ def execute():
 
 	start_time = time.time()
 	fetch.main() #KEEP
-	cleaner.main() #KEEP
-	haplotypes.main()
-	distinct.main() #KEEP
-	popcounts.main()
-	visualization.main()
-	userfile.main()
-	haplotypeGraph.main()
+	# cleaner.main() #KEEP
+	# haplotypes.main()
+	# distinct.main() #KEEP
+	# popcounts.main()
+	# visualization.main()
+	# userfile.main()
+	# haplotypeGraph.main()
 	print("--- total time %s seconds ---" % (time.time() - start_time))
 			 
 def main():	
@@ -122,7 +114,7 @@ def main():
 	print("--- settings %s seconds ---" % (time.time() - start_time))
 
 	# TO REMOVE LATER 
-	config.__LOCAL__ = True
+	config.__LOCAL__ = False
 	print(config.__LOCAL__, ' main run local or not')
 
 	# decide if run once or for multiple genes
