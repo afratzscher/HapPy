@@ -2,7 +2,8 @@
 
 ## Instructions
 * You will need to download package dependencies. You can do so using the following command:
-`pip3 install -r requirements.txt`
+     
+     `pip3 install -r requirements.txt`
 
 * Additionally, you will need to download the following large files (>30 GB) to fetch gene locations using the following commands:
 
