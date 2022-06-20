@@ -13,7 +13,11 @@
     + [Haplotypes](#haplotypes-1)
     + [Concatenation](#concatenation-1)
   * [Test Run](#test-run)
-
+    + [Haplotypes](#haplotypes-2)
+    + [Concatenation](#concatenation-2)
+  * [TO DO](#to-do)
+    + [Haplotypes](#haplotypes-3)
+    + [Concatenation](#concatenation-3)
 
 ## Overview
 This is package has two objectives:
@@ -132,17 +136,21 @@ Output (saved in `/results/geneName`)
 
 ### Concatenation
 Input: 
-1. `full_length_haplotypes_geneName` = full length haplotypes for a gene
+1. `full_length_haplotypes_geneName.vcf` = full length haplotypes for a gene
 OR
-2. `distinct_geneName`.vcf = distinct haplotypes for a gene if that gene does not have any full-length haplotypes
+2. `distinct_geneName.vcf` = distinct haplotypes for a gene if that gene does not have any full-length haplotypes
 
-Currently, the output is some information printed to the screen.
+Currently, the output is some information printed to the screen. It looks something like this
 ```bash
-e.g. TO ADD
+0 1 ADDING  ACKR1
+11  initial
+length:  533
 ```
+It shows the number of long continuous stretch of homozygosity (LCSH, aka number of concatenated pairs) for the first two genes (e.g. 11 in this case), the gene that is trying to be concatenated to the existing sequence (e.g. ACKR1), and the number of LCSHs after adding the gene (e.g. 533). If no overlap is found, you get the following warning: `empty when adding: geneName`.
 
 
 ## Test Run
+### Haplotypes
 To test if the workflow is running properly, get haplotypes for the `ACKR1` gene. 
 Run the following command:
 ```bash
@@ -155,5 +163,35 @@ python3 automated_run.py
 
 The expected outputed can be found in the [`/results/test`](https://github.com/afratzscher/HapPy/tree/master/results/test) folder
 
+### Concatenation
+To test if the workflow is running properly, run the following script:
+```bash
+python3 test_concatenation.py
+```
+The expected output is the following
+```bash
+0 1 ADDING  ACKR1
+11  initial
+length:  533
+1 2 ADDING  FCER1A
+length:  201
+2 3 ADDING  OR10J1
+length:  21
+3 4 ADDING  OR10J5
+length:  31
+4 5 ADDING  APCS
+length:  12
+12 LCSHs
+```
 
+## TO DO
+### Haplotypes
+1. Consider removing some outputs from getHaplotypes scripts (really only need to keep `full_length_haplotypes_geneName.vcf`, `distinct_geneName.vcf`, and the visualizations) to save space
+2. Maybe change format of saved files (json or different type of file instead of .vcf (which is like .csv))?
+3. Get haplotypes for all genes on long arm of chromosome 1 (run `automated_run.py`)
+
+### Concatenation
+4. Update `combine_pairs.py` so that it does not break when no haplotypes are found (currently, it tries to concatenate the next gene and breaks if there is no overlap, so you have to manually rerun with new set of genes)
+5. Increase the threshold for `combine_pairs.py` so that there are fewer breaks
+6. Consider using a different ranking OR a different overall approach to decrease number of breaks
 
