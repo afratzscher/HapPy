@@ -1,6 +1,19 @@
 # HapPy
 
 # Table of Contents
+  * [Overview](#overview)
+  * [Installation](#installation)
+    + [Clone Github](#clone-github)
+    + [Set up environment](#set-up-environment)
+    + [Download files](#download-files)
+  * [Running code](#running-code)
+    + [Haplotypes](#haplotypes)
+    + [Concatenation](#concatenation)
+  * [Understanding Output](#understanding-output)
+    + [Haplotypes](#haplotypes-1)
+    + [Concatenation](#concatenation-1)
+  * [Test Run](#test-run)
+
 
 ## Overview
 This is package has two objectives:
@@ -129,7 +142,7 @@ e.g. TO ADD
 ```
 
 
-## TEST
+## Test Run
 To test if the workflow is running properly, get haplotypes for the `ACKR1` gene. 
 Run the following command:
 ```bash
