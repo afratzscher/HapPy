@@ -108,11 +108,9 @@ def execute():
 	distinct.main() #KEEP
 	popcounts.main()
 	visualization.main() #KEEP graph of populations for most frequent haplotype
+	userfile.main() # need to get metadata for haplotypeGraph
 	haplotypeGraph.main() #KEEP graph showing length of haplotyps
-
-	# run this if you want to (not required)
-	# userfile.main() # gets sequence and meta data for most frequent haplotype
-			 
+	 
 def main():	
 	# get options from user (gene name or region)
 	opts = getOptions() 
