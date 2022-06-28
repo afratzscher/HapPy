@@ -40,7 +40,7 @@ git clone https://github.com/afratzscher/HapPy
 Next, set up the environment. You can do this using conda:
 
 ```bash
-conda env create --name venv --file=environment.yml
+conda env create --name venv --file=environment.yaml
 ```
 
 *NOTE: make sure to activate the environment prior to running (`conda activate venv`)*
